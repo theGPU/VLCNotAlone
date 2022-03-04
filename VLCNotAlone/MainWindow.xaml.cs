@@ -50,6 +50,8 @@ namespace VLCNotAlone
 #if DEBUG
                 libVLC = new LibVLC("--verbose=2");
                 libVLC.SetLogFile("./VlcNotAloneLogs.txt");
+#else
+                libVLC = new LibVLC();
 #endif
 
                 mediaPlayer = new MediaPlayer(libVLC);
