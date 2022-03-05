@@ -5,8 +5,9 @@ Readme content will add later
 
 TODO:
 - [X] First release
+- [X] Discord RPC
 - [ ] Nicknames
 - [ ] Fix server
-- [ ] Xamarin android app
+- [ ] Xamarin android app (WIP)
 - [ ] Documentation
-- [ ] Plugins
+- [ ] Plugins (WIP)
