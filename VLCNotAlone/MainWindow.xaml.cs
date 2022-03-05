@@ -27,12 +27,14 @@ namespace VLCNotAlone
 
         private LibVLC libVLC;
         public MediaPlayer mediaPlayer;
-        private long currentLength = 0;
+        public long currentLength { get; private set; } = 0;
 
         private int currentCropGeometry = 0;
         private static string[] cropGeometries = { "", "16:10", "16:9", "4:3", "13:7", "11:5", "7:3", "5:3", "5:4", "1:1" };
 
-        private static readonly ClientApi clientApi = new ClientApi();
+        public readonly ClientApi clientApi = new ClientApi();
+
+        public Action<MediaPlayer> OnMediaPlayerLoaded;
 
         public MainWindow()
         {
@@ -45,6 +47,7 @@ namespace VLCNotAlone
 
             VideoPlayer.Loaded += (s, e) =>
             {
+
                 Core.Initialize();
 
 #if DEBUG
@@ -66,11 +69,12 @@ namespace VLCNotAlone
                 };
 
                 VideoPlayer.MediaPlayer = mediaPlayer;
+                OnMediaPlayerLoaded?.Invoke(mediaPlayer);
 
                 ConfigController.Init();
             };
 
-            clientApi.OnConnectChanged = (connected) =>
+            clientApi.OnConnectChanged += (connected) =>
             {
                 this.Dispatcher.Invoke(() =>
                 {
@@ -81,7 +85,7 @@ namespace VLCNotAlone
                     ServerMenu.IsEnabled = connected;
                 });
             };
-            clientApi.OnDisconnect = () =>
+            clientApi.OnDisconnect += () =>
             {
                 mediaPlayer!.SetPause(true);
                 OnShowMessage("Connection", "aborted");
@@ -89,41 +93,41 @@ namespace VLCNotAlone
                 if (clientApi.Connected)
                     clientApi.Pause(mediaPlayer.Time);
             };
-            clientApi.OnSetTimeRecived = (time) =>
+            clientApi.OnSetTimeRecived += (time) =>
             {
                 mediaPlayer!.Time = time;
                 OnPlayerTimeChanged(time);
             };
-            clientApi.OnPause = (time) => { mediaPlayer!.SetPause(true); if (time.HasValue) mediaPlayer.Time = time.Value; };
-            clientApi.OnResume = () => mediaPlayer!.SetPause(false);
+            clientApi.OnPause += (time) => { mediaPlayer!.SetPause(true); if (time.HasValue) mediaPlayer.Time = time.Value; };
+            clientApi.OnResume += () => mediaPlayer!.SetPause(false);
 
-            clientApi.OnSetLocalMediaFile = (mediaPath) => PlayNewFile(mediaPath, "Local");
-            clientApi.OnSetGlobalMediaFile = (mediaPath) => PlayNewFile(mediaPath, "Global");
-            clientApi.OnSetInternetMediaFile = (mediaPath) => PlayNewFile(mediaPath, "Internet");
+            clientApi.OnSetLocalMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Local");
+            clientApi.OnSetGlobalMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Global");
+            clientApi.OnSetInternetMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Internet");
 
-            clientApi.OnClientConnected = (endpoint) =>
+            clientApi.OnClientConnected += (endpoint) =>
             {
                 mediaPlayer!.SetPause(true);
                 OnShowMessage("ClientConnected", endpoint);
             };
-            clientApi.OnClientDisconnected = (endpoint) =>
+            clientApi.OnClientDisconnected += (endpoint) =>
             {
                 mediaPlayer!.SetPause(true);
                 OnShowMessage("ClientDisconnected", endpoint);
             };
 
-            clientApi.OnWhatTime = (clientId) => 
+            clientApi.OnWhatTime += (clientId) => 
             {
                 if (mediaPlayer!.Media != null)
                     clientApi.SendWhatTimeResponce(clientId, currentFileMode, currentFile, mediaPlayer!.Time);
             };
-            clientApi.OnWhatTimeResponce = (mode, path, time) =>
+            clientApi.OnWhatTimeResponce += (mode, path, time) =>
             {
                 PlayNewFile(path, mode);
                 mediaPlayer!.Time = time;
             };
 
-            clientApi.OnClientsList = (clients) =>
+            clientApi.OnClientsList += (clients) =>
             {
                 this.Dispatcher.Invoke(() =>
                 {
@@ -135,7 +139,7 @@ namespace VLCNotAlone
                 });
             };
 
-            clientApi.OnEvent = (isError, title, desc) => OnShowMessage(title, desc);
+            clientApi.OnEvent += (isError, title, desc) => OnShowMessage(title, desc);
 
             FillServersInClientMenu();
 
@@ -152,6 +156,8 @@ namespace VLCNotAlone
                 mediaPlayer!.NetworkCaching = newCachingTime;
                 NetworkCacheTextBox.Text = newCachingTime.ToString();
             };
+
+            DiscordRpcController.Init();
         }
 
         private void FillServersInClientMenu()

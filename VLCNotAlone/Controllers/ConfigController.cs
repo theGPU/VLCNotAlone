@@ -15,6 +15,7 @@ namespace VLCNotAlone.Controllers
 
         public static Action<uint> OnFileCachingTimeChanged;
         public static Action<uint> OnNetworkCachingTimeChanged;
+        public static Action<bool> OnDiscordRPCChanged;
 
         public static void Init()
         {
@@ -29,6 +30,7 @@ namespace VLCNotAlone.Controllers
 
             OnFileCachingTimeChanged?.Invoke(config.FileCachingTime);
             OnNetworkCachingTimeChanged?.Invoke(config.NetworkCachingTime);
+            OnDiscordRPCChanged?.Invoke(config.DiscordRPC);
         }
 
         private static void SaveConfig() => File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(config, Formatting.Indented));
@@ -52,11 +54,19 @@ namespace VLCNotAlone.Controllers
             OnNetworkCachingTimeChanged?.Invoke(newCacheTime);
             SaveConfig();
         }
+
+        public static void ToggleDiscordRPC()
+        {
+            config.DiscordRPC = !config.DiscordRPC;
+            OnDiscordRPCChanged?.Invoke(config.DiscordRPC);
+            SaveConfig();
+        }
     }
 
     internal class ConfigPOCO
     {
         public uint FileCachingTime { get; set; } = 5000;
         public uint NetworkCachingTime { get; set; } = 5000;
+        public bool DiscordRPC { get; set; } = true;
     }
 }

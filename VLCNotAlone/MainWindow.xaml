@@ -39,6 +39,10 @@
                         <MenuItem Header="Кеш сети">
                             <TextBox Height="20" Width="200" x:Name="NetworkCacheTextBox" KeyDown="OnNetCacheBoxKeyDown"/>
                         </MenuItem>
+                        <MenuItem Header="DiscordRPC" x:Name="DiscordRPCConfigMenu">
+                            <MenuItem Header="Active" x:Name="DiscordRPCConfigActiveMenuItem"/>
+                            <MenuItem Header="Deactive" x:Name="DiscordRPCConfigDeactiveMenuItem"/>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Подключение" x:Name="ConnectionMenu">
                         <TextBox Height="20" Width="200" KeyDown="OnServerIPBoxKeyDown"/>

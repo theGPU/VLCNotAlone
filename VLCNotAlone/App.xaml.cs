@@ -13,5 +13,13 @@ namespace VLCNotAlone
     /// </summary>
     public partial class App : Application
     {
+        public static Action OnApplicationExit;
+
+        private void Application_Exit(object sender, SessionEndingCancelEventArgs e)
+        {
+            OnApplicationExit?.Invoke();
+
+            base.OnSessionEnding(e);
+        }
     }
 }
