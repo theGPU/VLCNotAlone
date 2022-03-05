@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PluginsManager\PluginsManager.csproj" />
     <ProjectReference Include="..\VLCNotAloneShared\VLCNotAloneShared.csproj" />
   </ItemGroup>
 

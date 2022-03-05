@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using VLCNotAlone.Controllers;
+using VLCNotAlone.Plugins.Controllers;
 
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
 
@@ -44,6 +45,8 @@ namespace VLCNotAlone
             CurrentTimeLabel.Content = "00:00:00";
             MaxTimeLabel.Content = "00:00:00";
             VideoProgressBar.Value = 0;
+
+            PluginsManager.Init();
 
             VideoPlayer.Loaded += (s, e) =>
             {
@@ -157,7 +160,7 @@ namespace VLCNotAlone
                 NetworkCacheTextBox.Text = newCachingTime.ToString();
             };
 
-            DiscordRpcController.Init();
+            //DiscordRpcController.Init();
         }
 
         private void FillServersInClientMenu()

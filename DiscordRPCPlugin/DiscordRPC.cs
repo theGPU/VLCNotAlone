@@ -1,34 +1,21 @@
 ﻿using DiscordRPC;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using VLCNotAlone;
+using VLCNotAlone.Plugins;
+using VLCNotAlone.Plugins.Interfaces;
 
-namespace VLCNotAlone.Controllers
+namespace DiscordRPCPlugin
 {
-    internal class DiscordRpcController
+    public class DiscordRPC : IInitializablePlugin
     {
+        public string Name => "DiscordRPC";
+        public string Description => "Sample plugin";
+
         private static DiscordRpcClient Client;
         private static RichPresence Presence;
 
-        private static bool _enabled = false;
-        private static bool Enabled { get => _enabled; set { _enabled = value; UpdatePresence(); UpdateConfigMenuButtonsVisability(); } }
-
-        private static void OnDiscordRPCToggle(object sender, RoutedEventArgs e) => ConfigController.ToggleDiscordRPC();
-
-        private static void UpdateConfigMenuButtonsVisability()
+        public void Initialize()
         {
-            MainWindow.Instance.DiscordRPCConfigActiveMenuItem.Visibility = Enabled ? Visibility.Collapsed : Visibility.Visible;
-            MainWindow.Instance.DiscordRPCConfigDeactiveMenuItem.Visibility = Enabled ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public static void Init()
-        {
-
-            ConfigController.OnDiscordRPCChanged += (value) => Enabled = value;
-
             Client = new DiscordRpcClient("949685737022976111");
             Client.Initialize();
             Presence = new RichPresence()
@@ -52,16 +39,16 @@ namespace VLCNotAlone.Controllers
 
             MainWindow.Instance.OnMediaPlayerLoaded += (mediaPlayer) => mediaPlayer.TimeChanged += (s, e) => UpdateTime(TimeSpan.FromMilliseconds(e.Time), TimeSpan.FromMilliseconds(MainWindow.Instance.currentLength));
 
-            MainWindow.Instance.DiscordRPCConfigActiveMenuItem.Click += OnDiscordRPCToggle;
-            MainWindow.Instance.DiscordRPCConfigDeactiveMenuItem.Click += OnDiscordRPCToggle;
+            //MainWindow.Instance.DiscordRPCConfigActiveMenuItem.Click += OnDiscordRPCToggle;
+            //MainWindow.Instance.DiscordRPCConfigDeactiveMenuItem.Click += OnDiscordRPCToggle;
 
             UpdateFileName(null, false);
             UpdateTime(null, null, false);
         }
 
-        public static void UpdatePresence() 
+        public static void UpdatePresence()
         {
-            if (Enabled)
+            if (true)
                 Client.SetPresence(Presence);
             else
                 Client.ClearPresence();
