@@ -1,21 +1,34 @@
 ﻿using DiscordRPC;
+using LibVLCSharp.Shared;
 using System;
+using System.Windows;
+using System.Windows.Controls;
 using VLCNotAlone;
 using VLCNotAlone.Plugins;
+using VLCNotAlone.Plugins.Controllers;
 using VLCNotAlone.Plugins.Interfaces;
+using Button = DiscordRPC.Button;
 
 namespace DiscordRPCPlugin
 {
-    public class DiscordRPC : IInitializablePlugin
+    public class DiscordRPC : IInitializablePlugin, IConfigurablePlugin
     {
         public string Name => "DiscordRPC";
         public string Description => "Sample plugin";
+        public string ConfigName => "DiscordRPC.json";
 
-        private static DiscordRpcClient Client;
-        private static RichPresence Presence;
+        private DiscordRpcClient Client;
+        private RichPresence Presence;
+
+        private DiscordRPCConfig Config;
+
+        private MenuItem PluginActiveButton;
+        private MenuItem PluginDeactiveButton;
 
         public void Initialize()
         {
+            Config = this.GetConfig<DiscordRPCConfig>();
+
             Client = new DiscordRpcClient("949685737022976111");
             Client.Initialize();
             Presence = new RichPresence()
@@ -37,29 +50,59 @@ namespace DiscordRPCPlugin
             MainWindow.Instance.clientApi.OnSetLocalMediaFile += (fileName) => UpdateFileName(fileName);
             MainWindow.Instance.clientApi.OnSetInternetMediaFile += (fileName) => UpdateFileName("NetFile...");
 
-            MainWindow.Instance.OnMediaPlayerLoaded += (mediaPlayer) => mediaPlayer.TimeChanged += (s, e) => UpdateTime(TimeSpan.FromMilliseconds(e.Time), TimeSpan.FromMilliseconds(MainWindow.Instance.currentLength));
+            MainWindow.Instance.OnMediaPlayerLoaded += (MediaPlayer mediaPlayer) =>
+            {
+                mediaPlayer.LengthChanged += (s, e) => UpdateTime(TimeSpan.FromMilliseconds(0), TimeSpan.FromMilliseconds(e.Length));
+                mediaPlayer.TimeChanged += (s, e) => UpdateTime(TimeSpan.FromMilliseconds(e.Time), TimeSpan.FromMilliseconds(MainWindow.Instance.currentLength));
+            };
 
-            //MainWindow.Instance.DiscordRPCConfigActiveMenuItem.Click += OnDiscordRPCToggle;
-            //MainWindow.Instance.DiscordRPCConfigDeactiveMenuItem.Click += OnDiscordRPCToggle;
+            CreateClientMenuButtons();
 
             UpdateFileName(null, false);
             UpdateTime(null, null, false);
+            UpdatePresence();
         }
 
-        public static void UpdatePresence()
+        public void CreateClientMenuButtons()
         {
-            if (true)
+            PluginActiveButton = new MenuItem { Header = "Active" };
+            PluginActiveButton.Click += TogglePlugin;
+
+            PluginDeactiveButton = new MenuItem { Header = "Deactive" };
+            PluginDeactiveButton.Click += TogglePlugin;
+
+            var pluginMenu = new MenuItem { Header = nameof(DiscordRPC) };
+            pluginMenu.Items.Add(PluginActiveButton);
+            pluginMenu.Items.Add(PluginDeactiveButton);
+
+            MainWindow.PluginsClientMenu.Items.Add(pluginMenu);
+            UpdateActiveButtonsVisability();
+        }
+
+        private void TogglePlugin(object sender, RoutedEventArgs e)
+        {
+            Config.Enabled = !Config.Enabled;
+            UpdateActiveButtonsVisability();
+            UpdatePresence();
+            this.UpdateConfig(Config);
+        }
+
+        private void UpdateActiveButtonsVisability()
+        {
+            PluginActiveButton.Visibility = Config.Enabled ? Visibility.Collapsed : Visibility.Visible;
+            PluginDeactiveButton.Visibility = Config.Enabled ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public void UpdatePresence()
+        {
+            if (Config.Enabled)
                 Client.SetPresence(Presence);
             else
                 Client.ClearPresence();
         }
 
-        public static void UpdateTime(TimeSpan? currentTime, TimeSpan? length, bool needUpdate = true)
+        public void UpdateTime(TimeSpan? currentTime, TimeSpan? length, bool needUpdate = true)
         {
-            //if (!currentTime.HasValue || !length.HasValue)
-            //    Presence.Timestamps = null;
-            //else
-            //    Presence.Timestamps = new Timestamps { StartUnixMilliseconds = (ulong?)currentTime, EndUnixMilliseconds = (ulong?)length };
             if (currentTime == null || length == null)
                 Presence.State = null;
             else
@@ -69,7 +112,7 @@ namespace DiscordRPCPlugin
                 UpdatePresence();
         }
 
-        public static void UpdateFileName(string? newFileName, bool needUpdate = true)
+        public void UpdateFileName(string? newFileName, bool needUpdate = true)
         {
             Presence.Details = $"Watching: {(newFileName != null ? newFileName : "Nothing")}";
 
@@ -80,7 +123,7 @@ namespace DiscordRPCPlugin
                 UpdatePresence();
         }
 
-        private static void OnApplicationExit()
+        private void OnApplicationExit()
         {
             Client.ClearPresence();
         }

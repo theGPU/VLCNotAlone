@@ -25,6 +25,7 @@ namespace VLCNotAlone
     public partial class MainWindow : Window
     {
         public static MainWindow Instance;
+        public static MenuItem PluginsClientMenu { get; private set; }
 
         private LibVLC libVLC;
         public MediaPlayer mediaPlayer;
@@ -41,6 +42,7 @@ namespace VLCNotAlone
         {
             Instance = this;
             InitializeComponent();
+            PluginsClientMenu = this.ClientMenu;
 
             CurrentTimeLabel.Content = "00:00:00";
             MaxTimeLabel.Content = "00:00:00";
@@ -144,7 +146,7 @@ namespace VLCNotAlone
 
             clientApi.OnEvent += (isError, title, desc) => OnShowMessage(title, desc);
 
-            FillServersInClientMenu();
+            FillServersList();
 
             //config controller
 
@@ -163,7 +165,7 @@ namespace VLCNotAlone
             //DiscordRpcController.Init();
         }
 
-        private void FillServersInClientMenu()
+        private void FillServersList()
         {
             var items = File.ReadAllLines("Servers.txt").Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => { var menu = new MenuItem() { Header = x }; menu.Click += OnConnectAddressClick; return menu; });
             this.Dispatcher.Invoke(() =>
