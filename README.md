@@ -10,4 +10,4 @@ TODO:
 - [ ] Fix server
 - [ ] Xamarin android app (WIP)
 - [ ] Documentation
-- [ ] Plugins (WIP)
+- [X] Plugins (WIP)
