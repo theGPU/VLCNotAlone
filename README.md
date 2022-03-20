@@ -1,13 +1,18 @@
 # VLCNotAlone
 А multiple client application designed for watching videos and movies with friends<br>
 Only russian language for now<br>
-Readme content will add later
+Readme content will add later<br>
 
-TODO:
+##### Screenshot:
+![image](https://user-images.githubusercontent.com/42218370/159163002-c2f24dae-a036-4e54-81ce-804f767b47dc.png)
+
+
+#### TODO:
 - [X] First release
 - [X] Discord RPC
 - [ ] Nicknames
-- [ ] Fix server
+- [x] Fix server (maybe fixed)
 - [ ] Xamarin android app (WIP)
 - [ ] Documentation
-- [X] Plugins (WIP)
+- [ ] Localization support (WIP)
+- [X] Plugins
