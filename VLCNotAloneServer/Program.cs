@@ -13,7 +13,6 @@ namespace VLCNotAloneServer
 {
     internal class Program
     {
-        private static int port = 2048;
 
         private static ConcurrentQueue<string> ClientsCommandsQueue = new ConcurrentQueue<string>();
         private static List<ConnectedClientPOCO> Clients = new List<ConnectedClientPOCO>();
@@ -22,8 +21,7 @@ namespace VLCNotAloneServer
 
         static async Task Main(string[] args)
         {
-            if (args.Length >= 1)
-                port = int.Parse(args[0]);
+            ConfigController.Init();
 
             Console.WriteLine("Starting server...");
             GetExternalIp();
@@ -39,7 +37,7 @@ namespace VLCNotAloneServer
         static void GetExternalIp()
         {
             using HttpClient client = new HttpClient();
-            Console.WriteLine($"External address: {client.GetStringAsync("http://ip-api.com/line/?fields=8192").Result.TrimEnd()}:{port}");
+            Console.WriteLine($"External address: {client.GetStringAsync("http://ip-api.com/line/?fields=8192").Result.TrimEnd()}:{ConfigController.Port}");
         }
 
         static void ProxyInputWorker()
@@ -48,7 +46,7 @@ namespace VLCNotAloneServer
 
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-            socket.Bind(new IPEndPoint(IPAddress.Any, port));
+            socket.Bind(new IPEndPoint(IPAddress.Any, ConfigController.Port));
             socket.Listen(0);
             
             while (true)
@@ -79,7 +77,7 @@ namespace VLCNotAloneServer
                             ClientsCommandsQueue.Enqueue(SharedApi.CreateCommand("ClientConnected", handler.RemoteEndPoint.ToString()));
 
                             if (Clients.Count > 1)
-                                Clients[0].Socket.Send(Encoding.UTF8.GetBytes(SharedApi.CreateCommand("WhatTime", client.Id)));
+                                Clients[0].Socket.Send(Encoding.UTF8.GetBytes(SharedApi.CreateCommand("WhatTime", client.Id) + "<ETX>"));
                         }
 
                         Task.Run(() => ClientWorker(handler));

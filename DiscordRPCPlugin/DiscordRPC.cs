@@ -11,6 +11,8 @@ using Button = DiscordRPC.Button;
 
 namespace DiscordRPCPlugin
 {
+    #warning TODO: add titles
+    #warning TODO: add name from sub
     public class DiscordRPC : IInitializablePlugin, IConfigurablePlugin
     {
         public string Name => "DiscordRPC";

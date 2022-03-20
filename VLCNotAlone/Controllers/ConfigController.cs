@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,8 @@ namespace VLCNotAlone.Controllers
         {
             if (File.Exists(ConfigPath))
             {
-                config = JsonConvert.DeserializeObject<ConfigPOCO>(File.ReadAllText(ConfigPath))!;
+                config = JsonConvert.DeserializeObject<ConfigPOCO>(File.ReadAllText(ConfigPath), new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Populate })!;
+                SaveConfig();
             } else
             {
                 config = new ConfigPOCO();
@@ -32,6 +34,8 @@ namespace VLCNotAlone.Controllers
         }
 
         private static void SaveConfig() => File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(config, Formatting.Indented));
+
+        public static bool ShowLogo { get => config.ShowLogo; set { config.ShowLogo = value; SaveConfig(); } }
 
         public static void SetFileCachingTime(uint newCacheTime)
         {
@@ -56,7 +60,13 @@ namespace VLCNotAlone.Controllers
 
     internal class ConfigPOCO
     {
+        [DefaultValue(true)]
+        public bool ShowLogo { get; set; } = true;
+
+        [DefaultValue(5000)]
         public uint FileCachingTime { get; set; } = 5000;
+
+        [DefaultValue(5000)]
         public uint NetworkCachingTime { get; set; } = 5000;
     }
 }

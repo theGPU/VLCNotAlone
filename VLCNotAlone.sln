@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VLCNotAlone", "VLCNotAlone\VLCNotAlone.csproj", "{0BF6CE3E-15D9-405B-A8DC-31997D9EE372}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CFCEDC0D-FFD3-497F-B936-1737E17A1CED} = {CFCEDC0D-FFD3-497F-B936-1737E17A1CED}
+		{62833DA6-30CB-49E3-8741-3E68543D1524} = {62833DA6-30CB-49E3-8741-3E68543D1524}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VLCNotAloneShared", "VLCNotAloneShared\VLCNotAloneShared.csproj", "{6021F848-E2EE-434C-B92D-93FA2131DD4B}"
@@ -19,9 +20,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VLCNotAloneServer", "VLCNot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VLCNotAloneAndroid", "VLCNotAloneAndroid\VLCNotAloneAndroid.csproj", "{CD04C579-DED5-48F5-BC7B-494BCF0270E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordRPCPlugin", "DiscordRPCPlugin\DiscordRPCPlugin.csproj", "{600AC23D-25E0-4E7F-8A67-57948A2B8DD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRPCPlugin", "DiscordRPCPlugin\DiscordRPCPlugin.csproj", "{600AC23D-25E0-4E7F-8A67-57948A2B8DD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginsManager", "PluginsManager\PluginsManager.csproj", "{7482A166-8174-41EC-BFBC-54A114195F44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginsManager", "PluginsManager\PluginsManager.csproj", "{7482A166-8174-41EC-BFBC-54A114195F44}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImoutoRebirth.Navigator.ApngWpfPlayer", "ImoutoRebirth.Navigator.ApngWpfPlayer\ImoutoRebirth.Navigator.ApngWpfPlayer.csproj", "{62833DA6-30CB-49E3-8741-3E68543D1524}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromecastPlugin", "ChromecastPlugin\ChromecastPlugin.csproj", "{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +60,14 @@ Global
 		{7482A166-8174-41EC-BFBC-54A114195F44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7482A166-8174-41EC-BFBC-54A114195F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7482A166-8174-41EC-BFBC-54A114195F44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62833DA6-30CB-49E3-8741-3E68543D1524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62833DA6-30CB-49E3-8741-3E68543D1524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62833DA6-30CB-49E3-8741-3E68543D1524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62833DA6-30CB-49E3-8741-3E68543D1524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

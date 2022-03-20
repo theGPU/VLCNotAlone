@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VLCNotAlone"
+        xmlns:properties="clr-namespace:VLCNotAlone.Properties"
         xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+        xmlns:apngPlayer="clr-namespace:ImoutoRebirth.Navigator.ApngWpfPlayer.ApngPlayer;assembly=ImoutoRebirth.Navigator.ApngWpfPlayer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" KeyUp="OnKeyUp">
+        Title="VLCNotAlone" Height="450" Width="800" KeyUp="OnKeyUp">
     <Grid Background="#222226">
         <vlc:VideoView Grid.Row="1" x:Name="VideoPlayer">
             <Grid>
@@ -15,6 +17,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
+                <apngPlayer:ApngPlayer Source="/VLCNotAlone;component/Resources/Images/logo.png" Grid.Row="1" x:Name="LogoImagePlayer" Visibility="Collapsed"/>
                 <Menu Height="20" VerticalAlignment="Top" Background="White" x:Name="TopControlMenu" Grid.Row="0">
                     <MenuItem Header="Медиа" x:Name="MediaMenu" IsEnabled="False">
                         <MenuItem Header="Открыть файл (папка)" Click="OnOpenLocalFile"/>

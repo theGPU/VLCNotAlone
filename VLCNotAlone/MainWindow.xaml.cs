@@ -26,8 +26,9 @@ namespace VLCNotAlone
     {
         public static MainWindow Instance;
         public static MenuItem PluginsClientMenu { get; private set; }
+        public static Menu ControlMenu { get; private set; }
 
-        private LibVLC libVLC;
+        public LibVLC libVLC;
         public MediaPlayer mediaPlayer;
         public long currentLength { get; private set; } = 0;
 
@@ -43,6 +44,7 @@ namespace VLCNotAlone
             Instance = this;
             InitializeComponent();
             PluginsClientMenu = this.ClientMenu;
+            ControlMenu = this.TopControlMenu;
 
             CurrentTimeLabel.Content = "00:00:00";
             MaxTimeLabel.Content = "00:00:00";
@@ -52,12 +54,11 @@ namespace VLCNotAlone
 
             VideoPlayer.Loaded += (s, e) =>
             {
-
                 Core.Initialize();
 
 #if DEBUG
                 libVLC = new LibVLC("--verbose=2");
-                libVLC.SetLogFile("./VlcNotAloneLogs.txt");
+                //libVLC.SetLogFile($"./VlcNotAloneLogs {DateTime.Now}.txt");
 #else
                 libVLC = new LibVLC();
 #endif
@@ -77,6 +78,9 @@ namespace VLCNotAlone
                 OnMediaPlayerLoaded?.Invoke(mediaPlayer);
 
                 ConfigController.Init();
+
+                LogoImagePlayer.Visibility = ConfigController.ShowLogo ? Visibility.Visible : Visibility.Collapsed;
+                LogoImagePlayer.OnPlayingEnd += () => { LogoImagePlayer.Visibility = Visibility.Collapsed; ((Grid)LogoImagePlayer.Parent).Children.Remove(LogoImagePlayer); };
             };
 
             clientApi.OnConnectChanged += (connected) =>
@@ -136,6 +140,13 @@ namespace VLCNotAlone
             {
                 this.Dispatcher.Invoke(() =>
                 {
+                    for (var i = ClientsListMenu.Items.Count - 1; i >= 0; i--)
+                    {
+                        var item = (MenuItem)ClientsListMenu.Items[i];
+                        if (item.Name != "UpdateClientsListMenuItem")
+                            ClientsListMenu.Items.Remove(item);
+                    }
+
                     foreach (var client in clients)
                         ClientsListMenu.Items.Add(new MenuItem() { Header = client });
 
@@ -161,8 +172,6 @@ namespace VLCNotAlone
                 mediaPlayer!.NetworkCaching = newCachingTime;
                 NetworkCacheTextBox.Text = newCachingTime.ToString();
             };
-
-            //DiscordRpcController.Init();
         }
 
         private void FillServersList()
