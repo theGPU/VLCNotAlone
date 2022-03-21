@@ -14,5 +14,5 @@ Readme content will add later<br>
 - [x] Fix server (maybe fixed)
 - [ ] Xamarin android app (WIP)
 - [ ] Documentation
-- [ ] Localization support (WIP)
+- [X] Localization support
 - [X] Plugins
