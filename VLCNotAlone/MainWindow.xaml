@@ -19,36 +19,37 @@
                 </Grid.RowDefinitions>
                 <apngPlayer:ApngPlayer Source="/VLCNotAlone;component/Resources/Images/logo.png" Grid.Row="1" x:Name="LogoImagePlayer" Visibility="Collapsed"/>
                 <Menu Height="20" VerticalAlignment="Top" Background="White" x:Name="TopControlMenu" Grid.Row="0">
-                    <MenuItem Header="Медиа" x:Name="MediaMenu" IsEnabled="False">
-                        <MenuItem Header="Открыть файл (папка)" Click="OnOpenLocalFile"/>
-                        <MenuItem Header="Открыть файл (глобально)" Click="OnOpenGlobalFile"/>
-                        <MenuItem Header="Открыть URL">
+                    <MenuItem Header="Media" x:Name="MediaMenu" IsEnabled="False">
+                        <MenuItem Header="Open file (folder)" Click="OnOpenLocalFile"/>
+                        <MenuItem Header="Open file (global)" Click="OnOpenGlobalFile"/>
+                        <MenuItem Header="Open URL">
                             <TextBox Height="20" Width="200" KeyDown="OnURLEnterTextBoxKeyDown"/>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Аудио" x:Name="AudioMenu" IsEnabled="False">
+                    <MenuItem Header="Audio" x:Name="AudioMenu" IsEnabled="False">
 
                     </MenuItem>
-                    <MenuItem Header="Видео" x:Name="VideoMenu" IsEnabled="False">
+                    <MenuItem Header="Video" x:Name="VideoMenu" IsEnabled="False">
 
                     </MenuItem>
-                    <MenuItem Header="Субтитры" x:Name="SubtitlesMenu" IsEnabled="False">
+                    <MenuItem Header="Subtitles" x:Name="SubtitlesMenu" IsEnabled="False">
 
                     </MenuItem>
-                    <MenuItem Header="Клиент" x:Name="ClientMenu">
-                        <MenuItem Header="Кеш файла">
+                    <MenuItem Header="Client" x:Name="ClientMenu">
+                        <MenuItem Header="Language" x:Name="LanguageMenuitem"/>
+                        <MenuItem Header="File cache">
                             <TextBox Height="20" Width="200" x:Name="FileCacheTextBox" KeyDown="OnFileCacheBoxKeyDown"/>
                         </MenuItem>
-                        <MenuItem Header="Кеш сети">
+                        <MenuItem Header="Net cache">
                             <TextBox Height="20" Width="200" x:Name="NetworkCacheTextBox" KeyDown="OnNetCacheBoxKeyDown"/>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Подключение" x:Name="ConnectionMenu">
+                    <MenuItem Header="Connection" x:Name="ConnectionMenu">
                         <TextBox Height="20" Width="200" KeyDown="OnServerIPBoxKeyDown"/>
                     </MenuItem>
-                    <MenuItem Header="Сервер" x:Name="ServerMenu"  IsEnabled="False">
-                        <MenuItem Header="Список клиентов" x:Name="ClientsListMenu">
-                            <MenuItem Header="Обновить" Click="OnClickUpdateClientsList" x:Name="UpdateClientsListMenuItem" StaysOpenOnClick="True"/>
+                    <MenuItem Header="Server" x:Name="ServerMenu"  IsEnabled="False">
+                        <MenuItem Header="Client list" x:Name="ClientsListMenu">
+                            <MenuItem Header="Update" Click="OnClickUpdateClientsList" x:Name="UpdateClientsListMenuItem" StaysOpenOnClick="True"/>
                         </MenuItem>
                     </MenuItem>
                 </Menu>

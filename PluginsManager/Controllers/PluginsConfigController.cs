@@ -32,7 +32,6 @@ namespace VLCNotAlone.Plugins.Controllers
             {
                 var config = Activator.CreateInstance(typeof(T));
                 UpdateConfig(modConfigName, config);
-                CachedConfigs.Add(modConfigName, config);
                 return (T)config;
             }
         }

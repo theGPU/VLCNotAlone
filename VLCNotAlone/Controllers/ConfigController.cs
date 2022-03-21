@@ -36,6 +36,7 @@ namespace VLCNotAlone.Controllers
         private static void SaveConfig() => File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(config, Formatting.Indented));
 
         public static bool ShowLogo { get => config.ShowLogo; set { config.ShowLogo = value; SaveConfig(); } }
+        public static string Language { get => config.Language; set { config.Language = value; SaveConfig(); } }
 
         public static void SetFileCachingTime(uint newCacheTime)
         {
@@ -62,6 +63,9 @@ namespace VLCNotAlone.Controllers
     {
         [DefaultValue(true)]
         public bool ShowLogo { get; set; } = true;
+
+        [DefaultValue("en_US")]
+        public string Language { get; set; } = "en_US";
 
         [DefaultValue(5000)]
         public uint FileCachingTime { get; set; } = 5000;

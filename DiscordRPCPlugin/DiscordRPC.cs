@@ -67,10 +67,10 @@ namespace DiscordRPCPlugin
 
         public void CreateClientMenuButtons()
         {
-            PluginActiveButton = new MenuItem { Header = "Active" };
+            PluginActiveButton = new MenuItem { Header = "Enable" };
             PluginActiveButton.Click += TogglePlugin;
 
-            PluginDeactiveButton = new MenuItem { Header = "Deactive" };
+            PluginDeactiveButton = new MenuItem { Header = "Disable" };
             PluginDeactiveButton.Click += TogglePlugin;
 
             var pluginMenu = new MenuItem { Header = nameof(DiscordRPC) };

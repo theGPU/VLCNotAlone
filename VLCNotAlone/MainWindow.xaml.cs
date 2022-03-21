@@ -19,6 +19,7 @@ using VLCNotAlone.Controllers;
 using VLCNotAlone.Plugins.Controllers;
 
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
+using VLCNotAlone.Utils;
 
 namespace VLCNotAlone
 {
@@ -74,10 +75,13 @@ namespace VLCNotAlone
                     this.Dispatcher.Invoke(() => RefilChannelsMenus());
                 };
 
+                mediaPlayer.Playing += (s, e) => this.Dispatcher.Invoke(() => CheckSelectedTracks()); //при запуске и снятия с паузы
+
                 VideoPlayer.MediaPlayer = mediaPlayer;
                 OnMediaPlayerLoaded?.Invoke(mediaPlayer);
 
                 ConfigController.Init();
+                Localizer.Init();
 
                 LogoImagePlayer.Visibility = ConfigController.ShowLogo ? Visibility.Visible : Visibility.Collapsed;
                 LogoImagePlayer.OnPlayingEnd += () => { LogoImagePlayer.Visibility = Visibility.Collapsed; ((Grid)LogoImagePlayer.Parent).Children.Remove(LogoImagePlayer); };
@@ -97,7 +101,7 @@ namespace VLCNotAlone
             clientApi.OnDisconnect += () =>
             {
                 mediaPlayer!.SetPause(true);
-                OnShowMessage("Connection", "aborted");
+                OnShowMessage(Localizer.DoStr("Connection"), Localizer.DoStr("aborted"));
                 clientApi.Connect();
                 if (clientApi.Connected)
                     clientApi.Pause(mediaPlayer.Time);
@@ -117,12 +121,12 @@ namespace VLCNotAlone
             clientApi.OnClientConnected += (endpoint) =>
             {
                 mediaPlayer!.SetPause(true);
-                OnShowMessage("ClientConnected", endpoint);
+                OnShowMessage(Localizer.DoStr("Client connected"), endpoint);
             };
             clientApi.OnClientDisconnected += (endpoint) =>
             {
                 mediaPlayer!.SetPause(true);
-                OnShowMessage("ClientDisconnected", endpoint);
+                OnShowMessage(Localizer.DoStr("Client disconnected"), endpoint);
             };
 
             clientApi.OnWhatTime += (clientId) => 
@@ -234,9 +238,9 @@ namespace VLCNotAlone
             var media = new Media(libVLC, filePath, mode == "Internet" ? FromType.FromLocation : FromType.FromPath);
             if (mode == "Internet")
             {
-                OnShowMessage("Internet parser", "loading...");
+                OnShowMessage(Localizer.DoStr("Internet parser"), Localizer.DoStr("loading..."));
                 media.Parse(MediaParseOptions.ParseNetwork).Wait();
-                OnShowMessage("Internet parser", "loaded");
+                OnShowMessage(Localizer.DoStr("Internet parser"), Localizer.DoStr("loaded"));
             }
 
             if (mediaPlayer!.Play(media.SubItems.Count > 0 ? media.SubItems.First() : media))
@@ -248,7 +252,7 @@ namespace VLCNotAlone
             }
             else
             {
-                OnShowMessage("Load file", "ERROR");
+                OnShowMessage(Localizer.DoStr("Load file"), Localizer.DoStr("error"));
                 this.Dispatcher.Invoke(() => RefilChannelsMenus());
                 return false;
             }
@@ -280,8 +284,16 @@ namespace VLCNotAlone
         {
             if (e.Key == Key.Return)
             {
-                clientApi.host = ((TextBox)sender).Text;
-                clientApi.Connect();
+                try
+                {
+                    var hostAndPort = ((TextBox)sender).Text.Split(':');
+                    clientApi.host = hostAndPort[0];
+                    clientApi.port = int.Parse(hostAndPort[1]);
+                    clientApi.Connect();
+                } catch (Exception ex)
+                {
+                    OnShowMessage(Localizer.DoStr("Connection"), Localizer.DoStr("Enter valid host. e.g. \"example.com:4096\""));
+                }
             }
         }
 
@@ -301,19 +313,7 @@ namespace VLCNotAlone
             clientApi.SetTime((long)(currentLength * progressValue));
         }
 
-        private void OnClickUpdateClientsList(object sender, RoutedEventArgs e) 
-        {
-            this.Dispatcher.Invoke(() =>
-            {
-                for (var i = ClientsListMenu.Items.Count - 1; i >= 0; i--)
-                {
-                    var item = (MenuItem)ClientsListMenu.Items[i];
-                    if (item.Name != "UpdateClientsListMenuItem")
-                        ClientsListMenu.Items.Remove(item);
-                }
-            });
-            clientApi.RequestClientList();
-        }
+        private void OnClickUpdateClientsList(object sender, RoutedEventArgs e) => clientApi.RequestClientList();
 
         private void OnFileCacheBoxKeyDown(object sender, KeyEventArgs e)
         {
@@ -356,7 +356,7 @@ namespace VLCNotAlone
                         currentCropGeometry = 0;
 
                     mediaPlayer.CropGeometry = cropGeometries[currentCropGeometry];
-                    OnShowMessage("Кадрирование", cropGeometries[currentCropGeometry] != "" ? cropGeometries[currentCropGeometry] : "по умолчанию");
+                    OnShowMessage(Localizer.DoStr("Crop"), cropGeometries[currentCropGeometry] != "" ? cropGeometries[currentCropGeometry] : Localizer.DoStr("default"));
                     break;
                 case Key.Left:
                     clientApi.SetTime(mediaPlayer.Time - 5000 >= 0 ? mediaPlayer.Time - 5000 : 0);
@@ -462,6 +462,8 @@ namespace VLCNotAlone
 
             SubtitlesMenu.Items.Refresh();
             SubtitlesMenu.UpdateLayout();
+
+            CheckSelectedTracks();
         }
 
         private void OnClickChangeTrack(object sender, RoutedEventArgs e)
@@ -470,6 +472,7 @@ namespace VLCNotAlone
             if (menuElement.Name == "Audio")
             {
                 mediaPlayer.SetAudioTrack((int)menuElement.Tag);
+                menuElement.IsChecked = true;
             }
             else if (menuElement.Name == "AudioFromFile")
             {
@@ -479,10 +482,10 @@ namespace VLCNotAlone
                     if (mediaPlayer.AddSlave(MediaSlaveType.Audio, "file:///"+openFileDialog.FileName, true))
                     {
                         this.Dispatcher.Invoke(() => RefilChannelsMenus());
-                        OnShowMessage("Аудио", "файл загружен");
+                        OnShowMessage(Localizer.DoStr("Audio"), Localizer.DoStr("file loaded"));
                     }
                     else
-                        OnShowMessage("Аудио", "ошибка");
+                        OnShowMessage(Localizer.DoStr("Audio"), Localizer.DoStr("error"));
                 }
             }
             else if (menuElement.Name == "Video")
@@ -501,12 +504,29 @@ namespace VLCNotAlone
                     if (mediaPlayer.AddSlave(MediaSlaveType.Subtitle, "file:///"+openFileDialog.FileName, true))
                     {
                         this.Dispatcher.Invoke(() => RefilChannelsMenus());
-                        OnShowMessage("Субтитры", "файл загружен");
+                        OnShowMessage(Localizer.DoStr("Subtitles"), Localizer.DoStr("file loaded"));
                     }
                     else
-                        OnShowMessage("Субтитры", "ошибка");
+                        OnShowMessage(Localizer.DoStr("Subtitles"), Localizer.DoStr("error"));
                 }
             }
+
+            CheckSelectedTracks();
+        }
+
+        private void CheckSelectedTracks()
+        {
+            var audioTrackNum = mediaPlayer.AudioTrack;
+            foreach (var item in AudioMenu.Items.Cast<MenuItem>().Where(x => x.Tag is int))
+                item.IsChecked = audioTrackNum == (int)item.Tag;
+
+            var videoTrackNum = mediaPlayer.VideoTrack;
+            foreach (var item in VideoMenu.Items.Cast<MenuItem>().Where(x => x.Tag is int))
+                item.IsChecked = videoTrackNum == (int)item.Tag;
+
+            var spuTrackNum = mediaPlayer.Spu;
+            foreach (var item in SubtitlesMenu.Items.Cast<MenuItem>().Where(x => x.Tag is int))
+                item.IsChecked = spuTrackNum == (int)item.Tag;
         }
     }
 }

@@ -1,0 +1,22 @@
+﻿{
+	"Media": "Media",
+	"Open file (folder)": "Open file (folder)",
+	"Open file (global)": "Open file (global)",
+	"Open URL": "Open URL",
+	"Disable": "Disable",
+	"Audio": "Audio",
+	"Video": "Video",
+	"Subtitles": "Subtitles",
+	"Client": "Client",
+	"File cache": "File cache",
+	"Net cache": "Net cache",
+	"Connection": "Connection",
+	"Server": "Server",
+	"Client List": "Client List",
+	"Update": "Update",
+	"Enter valid host. e.g. \"example.com:4096\"": "Enter valid host. e.g. \"example.com:4096\"",
+
+	"Connection": "Connection",
+	"default": ""
+
+}

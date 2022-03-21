@@ -10,10 +10,18 @@
 
   <ItemGroup>
     <None Remove="Resources\Images\logo.png" />
+    <None Remove="Resources\Languagepacks\en_us.json" />
+    <None Remove="Resources\Languagepacks\ru_ru.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="logo.ico" />
+    <Content Include="Resources\Languagepacks\Base\ru_RU.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Languagepacks\Base\en_US.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Resources\Images\logo.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
