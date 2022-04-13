@@ -37,6 +37,9 @@
                     </MenuItem>
                     <MenuItem Header="Client" x:Name="ClientMenu">
                         <MenuItem Header="Language" x:Name="LanguageMenuitem"/>
+                        <MenuItem Header="Nickname">
+                            <TextBox Height="20" Width="200" x:Name="NicknameTextBox" KeyDown="OnNicknameBoxKeyDown"/>
+                        </MenuItem>
                         <MenuItem Header="File cache">
                             <TextBox Height="20" Width="200" x:Name="FileCacheTextBox" KeyDown="OnFileCacheBoxKeyDown"/>
                         </MenuItem>

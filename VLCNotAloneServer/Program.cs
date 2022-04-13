@@ -36,8 +36,16 @@ namespace VLCNotAloneServer
 
         static void GetExternalIp()
         {
-            using HttpClient client = new HttpClient();
-            Console.WriteLine($"External address: {client.GetStringAsync("http://ip-api.com/line/?fields=8192").Result.TrimEnd()}:{ConfigController.Port}");
+            try
+            {
+                using HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromSeconds(5);
+                Console.WriteLine($"External address: {client.GetStringAsync("http://ip-api.com/line/?fields=8192").Result.TrimEnd()}:{ConfigController.Port}");
+            }
+            catch
+            {
+                Console.WriteLine($"External address: Error:{ConfigController.Port}");
+            }
         }
 
         static void ProxyInputWorker()
@@ -71,7 +79,7 @@ namespace VLCNotAloneServer
                         handler.Send(Encoding.UTF8.GetBytes("ConnectionEstablished<ETX>"));
                         lock (clientSocketsLocker)
                         {
-                            var client = new ConnectedClientPOCO { APIVersion = helloCommand[1], Id = helloCommand[2], UserName = helloCommand[3], Socket = handler };
+                            var client = new ConnectedClientPOCO { APIVersion = helloCommand[1], Id = helloCommand[2], UserName = helloCommand[3], Nickname = helloCommand[4], Socket = handler };
                             Clients.Add(client);
 
                             ClientsCommandsQueue.Enqueue(SharedApi.CreateCommand("ClientConnected", handler.RemoteEndPoint.ToString()));
@@ -184,7 +192,7 @@ namespace VLCNotAloneServer
             {
                 lock (clientSocketsLocker)
                 {
-                    var response = SharedApi.CreateCommand("ClientsList", Clients.Select(x => $"[{x.UserName}] {x.Id} {x.APIVersion}").ToArray()) + "<ETX>";
+                    var response = SharedApi.CreateCommand("ClientsList", Clients.Select(x => $"[{(string.IsNullOrWhiteSpace(x.Nickname) ? x.UserName : x.Nickname)}] {x.Id}").ToArray()) + "<ETX>";
                     socket.Send(Encoding.UTF8.GetBytes(response));
                 }
             } catch (Exception ex)

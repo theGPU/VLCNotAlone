@@ -35,6 +35,7 @@
     <PackageReference Include="LibVLCSharp" Version="3.6.5" />
     <PackageReference Include="LibVLCSharp.WPF" Version="3.6.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="TagLibSharp" Version="2.2.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.16" />
   </ItemGroup>
 

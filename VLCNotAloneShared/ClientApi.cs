@@ -40,21 +40,27 @@ namespace VLCNotAloneShared
 
         private int clientId;
 
-        public void Connect()
+        public void Connect(string nickname)
         {
             try
             {
+                clientId = new Random().Next();
+                if (socket.Connected)
+                {
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Disconnect(false);
+                }
                 socket.Dispose();
+
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 OnEvent?.Invoke(false, "Connect", "Connecting...");
                 socket.Connect(host, port);
                 Connected = true;
                 OnEvent?.Invoke(false, "Connect", "Sending hello");
-                clientId = new Random().Next();
-                SendHelloMessage();
+                SendHelloMessage(nickname);
                 OnEvent?.Invoke(false, "Connect", "Successful");
-                Task.Run(() => ReciverWorker());
-                Task.Run(() => PingWorker());
+                Task.Run(() => ReciverWorker(clientId));
+                Task.Run(() => PingWorker(clientId));
             } catch (Exception ex)
             {
                 OnEvent?.Invoke(true, "Connect", $"Error: {ex.Message}");
@@ -62,7 +68,7 @@ namespace VLCNotAloneShared
             }
         }
 
-        public void ReciverWorker()
+        public void ReciverWorker(int workerClientId)
         {
             try
             {
@@ -86,7 +92,7 @@ namespace VLCNotAloneShared
                 }
             } catch (Exception ex)
             {
-                if (Connected)
+                if (Connected && workerClientId == clientId)
                 {
                     OnEvent?.Invoke(true, "ReciverWorker", $"Error: {ex}");
                     Connected = false;
@@ -141,16 +147,28 @@ namespace VLCNotAloneShared
             }
         }
 
-        public async Task PingWorker()
+        public async Task PingWorker(int workerClientId)
         {
-            while (Connected)
+            try
             {
-                await Task.Delay(10000);
-                SendCommand("Ping");
+                while (Connected)
+                {
+                    await Task.Delay(10000);
+                    SendCommand("Ping", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Connected && workerClientId == clientId)
+                {
+                    OnEvent?.Invoke(true, "PingWorker", $"Error: {ex}");
+                    Connected = false;
+                    OnDisconnect?.Invoke();
+                }
             }
         }
 
-        internal void SendHelloMessage() => SendCommand(SharedApi.CreateCommand("Hello", $"Api:{SharedApi.apiVersion}", $"{clientId}", $"{Environment.UserName}"));
+        internal void SendHelloMessage(string nickname) => SendCommand(SharedApi.CreateCommand("Hello", $"Api:{SharedApi.apiVersion}", $"{clientId}", $"{Environment.UserName}", nickname));
 
         public void SetTime(long time) => SendCommand(SharedApi.CreateCommand("SetTime", time.ToString()));
         public void Pause() => SendCommand(SharedApi.CreateCommand("Pause"));
@@ -165,7 +183,7 @@ namespace VLCNotAloneShared
 
         public void SendWhatTimeResponce(int clientId, string mode, string path, long time) => SendCommand(SharedApi.CreateCommand("WhatTimeResponce", clientId.ToString(), mode, path, time.ToString()));
 
-        internal void SendCommand(string command)
+        internal void SendCommand(string command, bool throwError = false)
         {
             try
             {
@@ -174,6 +192,9 @@ namespace VLCNotAloneShared
             }
             catch (Exception ex)
             {
+                if (throwError)
+                    throw;
+
                 if (Connected)
                 {
                     OnEvent?.Invoke(true, "SendCommand", $"Error: {ex}");
