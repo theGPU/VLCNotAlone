@@ -102,7 +102,7 @@ namespace VLCNotAlone
             {
                 mediaPlayer!.SetPause(true);
                 OnShowMessage(Localizer.DoStr("Connection"), Localizer.DoStr("aborted"));
-                clientApi.Connect();
+                clientApi.Connect(ConfigController.Nickname);
                 if (clientApi.Connected)
                     clientApi.Pause(mediaPlayer.Time);
             };
@@ -132,7 +132,7 @@ namespace VLCNotAlone
             clientApi.OnWhatTime += (clientId) => 
             {
                 if (mediaPlayer!.Media != null)
-                    clientApi.SendWhatTimeResponce(clientId, currentFileMode, currentFile, mediaPlayer!.Time);
+                    clientApi.SendWhatTimeResponce(clientId, CurrentFileMode, CurrentFileName, mediaPlayer!.Time);
             };
             clientApi.OnWhatTimeResponce += (mode, path, time) =>
             {
@@ -175,6 +175,11 @@ namespace VLCNotAlone
             {
                 mediaPlayer!.NetworkCaching = newCachingTime;
                 NetworkCacheTextBox.Text = newCachingTime.ToString();
+            };
+
+            ConfigController.OnConfigControllerInited += () =>
+            {
+                NicknameTextBox.Text = ConfigController.Nickname;
             };
         }
 
@@ -227,13 +232,18 @@ namespace VLCNotAlone
             return fileName;
         }
 
-        private string currentFile;
-        private string currentFileMode;
+        public string? CurrentFileMode { get; private set; }
+        public string? CurrentFileName { get; private set; }
+        public string? CurrentFileFullPatch { get; private set; }
+        public string? CurrentVideoTitle { get; private set; }
+        public Action<bool> OnPlayNewFileResult;
+
         private bool PlayNewFile(string path, string mode)
         {
-            currentFile = path;
-            currentFileMode = mode;
+            CurrentFileName = path;
+            CurrentFileMode = mode;
             var filePath = mode == "Global" ? FindGlobalFile(path) : path;
+            CurrentFileFullPatch = filePath;
 
             var media = new Media(libVLC, filePath, mode == "Internet" ? FromType.FromLocation : FromType.FromPath);
             if (mode == "Internet")
@@ -247,13 +257,23 @@ namespace VLCNotAlone
             {
                 mediaPlayer.SetPause(true);
                 OnPlayerTimeChanged(0);
-                this.Dispatcher.Invoke(() => this.Title = path);
+                using var file = TagLib.File.Create(CurrentFileFullPatch);
+                CurrentVideoTitle = file.Tag.Title;
+                this.Dispatcher.Invoke(() => this.Title = $"{CurrentVideoTitle ?? CurrentFileName} - VLCNotAlone");
+                OnPlayNewFileResult?.Invoke(true);
                 return true;
             }
             else
             {
                 OnShowMessage(Localizer.DoStr("Load file"), Localizer.DoStr("error"));
                 this.Dispatcher.Invoke(() => RefilChannelsMenus());
+
+                CurrentFileName = null;
+                CurrentFileMode = null;
+                CurrentFileFullPatch = null;
+                CurrentVideoTitle = null;
+
+                OnPlayNewFileResult?.Invoke(false);
                 return false;
             }
         }
@@ -289,7 +309,7 @@ namespace VLCNotAlone
                     var hostAndPort = ((TextBox)sender).Text.Split(':');
                     clientApi.host = hostAndPort[0];
                     clientApi.port = int.Parse(hostAndPort[1]);
-                    clientApi.Connect();
+                    clientApi.Connect(ConfigController.Nickname);
                 } catch (Exception ex)
                 {
                     OnShowMessage(Localizer.DoStr("Connection"), Localizer.DoStr("Enter valid host. e.g. \"example.com:4096\""));
@@ -303,7 +323,7 @@ namespace VLCNotAlone
             var hostPort = ((string)menuItem.Header).Split(':');
             clientApi.host = hostPort[0];
             clientApi.port = int.Parse(hostPort[1]);
-            clientApi.Connect();
+            clientApi.Connect(ConfigController.Nickname);
         }
 
         private void OnProgressBarDoubleClick(object sender, MouseButtonEventArgs e)
@@ -314,6 +334,15 @@ namespace VLCNotAlone
         }
 
         private void OnClickUpdateClientsList(object sender, RoutedEventArgs e) => clientApi.RequestClientList();
+
+        private void OnNicknameBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                var senderBox = (TextBox)sender;
+                ConfigController.Nickname = senderBox.Text;
+            }
+        }
 
         private void OnFileCacheBoxKeyDown(object sender, KeyEventArgs e)
         {
@@ -344,11 +373,16 @@ namespace VLCNotAlone
             switch (e.Key)
             {
                 case Key.Space:
+                case Key.MediaPlayPause:
                     if (mediaPlayer.IsPlaying)
                         clientApi.Pause(mediaPlayer.Time);
                     else 
                         clientApi.Resume();
                     //mediaPlayer.Pause();
+                    break;
+                case Key.MediaStop:
+                    if (mediaPlayer.IsPlaying)
+                        clientApi.Pause(mediaPlayer.Time);
                     break;
                 case Key.C:
                     currentCropGeometry++;
@@ -366,22 +400,27 @@ namespace VLCNotAlone
                     clientApi.SetTime(mediaPlayer.Time + 5000 <= mediaPlayer.Length ? mediaPlayer.Time + 5000 : mediaPlayer.Length);
                     //mediaPlayer.Time += 5000;
                     break;
+                case Key.MediaPreviousTrack:
+                    clientApi.SetTime(0);
+                    break;
                 case Key.Up:
+                case Key.VolumeUp:
                     mediaPlayer.Volume += 5;
                     break;
                 case Key.Down:
+                case Key.VolumeDown:
                     mediaPlayer.Volume = mediaPlayer.Volume - 5 >= 0 ? mediaPlayer.Volume-5 : 0;
                     break;
-                case Key.Y:
-                    clientApi.SetLocalMediaFile(@"D:\Torrents\Encanto (2021) WEB-DL.1080p.mkv");
-                    //mediaPlayer.Play(new Media(libVLC, @"D:\Torrents\Encanto (2021) WEB-DL.1080p.mkv"));
-                    //RefilChannelsMenus();
+                case Key.VolumeMute:
+                    mediaPlayer.Mute = mediaPlayer.Mute;
                     break;
                 case Key.Q:
+                case Key.Apps:
                     BottomControlPanel.Opacity = BottomControlPanel.Opacity == 0 ? 1 : 0;
                     TopControlMenu.Visibility = TopControlMenu.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
                     break;
                 case Key.F:
+                case Key.Zoom:
                     if (this.WindowStyle != WindowStyle.SingleBorderWindow)
                     {
                         this.ResizeMode = ResizeMode.CanResize;
@@ -396,6 +435,9 @@ namespace VLCNotAlone
                         this.WindowState = WindowState.Maximized;
                         //this.Topmost = true;
                     }
+                    break;
+                case Key.SelectMedia:
+                    OnOpenGlobalFile(null, null);
                     break;
             }
         }

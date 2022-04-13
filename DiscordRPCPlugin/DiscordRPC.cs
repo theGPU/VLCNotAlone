@@ -48,9 +48,12 @@ namespace DiscordRPCPlugin
 
             App.OnApplicationExit += () => OnApplicationExit();
 
+            /*
             MainWindow.Instance.clientApi.OnSetGlobalMediaFile += (fileName) => UpdateFileName(fileName);
             MainWindow.Instance.clientApi.OnSetLocalMediaFile += (fileName) => UpdateFileName(fileName);
             MainWindow.Instance.clientApi.OnSetInternetMediaFile += (fileName) => UpdateFileName("NetFile...");
+            */
+            MainWindow.Instance.OnPlayNewFileResult += (success) => UpdateFileName(MainWindow.Instance.CurrentVideoTitle ?? MainWindow.Instance.CurrentFileName);
 
             MainWindow.Instance.OnMediaPlayerLoaded += (MediaPlayer mediaPlayer) =>
             {

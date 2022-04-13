@@ -15,8 +15,16 @@
 	"Client List": "Client List",
 	"Update": "Update",
 	"Enter valid host. e.g. \"example.com:4096\"": "Enter valid host. e.g. \"example.com:4096\"",
-
-	"Connection": "Connection",
-	"default": ""
-
+	"Crop": "Crop",
+	"default": "default",
+	"error": "error",
+	"file loaded": "file loaded",
+	"aborted": "aborted",
+	"Client connected": "Client connected",
+	"Client disconnected": "Client disconnected",
+	"Internet parser": "Internet parser",
+	"loading...": "loading...",
+	"loaded": "loaded",
+	"Load file": "Load file",
+	"Nickname": "Nickname"
 }

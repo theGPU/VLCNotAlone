@@ -14,23 +14,19 @@ namespace VLCNotAlone.Controllers
         const string ConfigPath = "Config.json";
         private static ConfigPOCO config;
 
+        public static Action OnConfigControllerInited;
         public static Action<uint> OnFileCachingTimeChanged;
         public static Action<uint> OnNetworkCachingTimeChanged;
 
         public static void Init()
         {
-            if (File.Exists(ConfigPath))
-            {
-                config = JsonConvert.DeserializeObject<ConfigPOCO>(File.ReadAllText(ConfigPath), new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Populate })!;
-                SaveConfig();
-            } else
-            {
-                config = new ConfigPOCO();
-                SaveConfig();
-            }
+            config = File.Exists(ConfigPath) ? JsonConvert.DeserializeObject<ConfigPOCO>(File.ReadAllText(ConfigPath), new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Populate })! : new ConfigPOCO();
+            SaveConfig();
 
             OnFileCachingTimeChanged?.Invoke(config.FileCachingTime);
             OnNetworkCachingTimeChanged?.Invoke(config.NetworkCachingTime);
+
+            OnConfigControllerInited?.Invoke();
         }
 
         private static void SaveConfig() => File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(config, Formatting.Indented));
@@ -57,6 +53,8 @@ namespace VLCNotAlone.Controllers
             OnNetworkCachingTimeChanged?.Invoke(newCacheTime);
             SaveConfig();
         }
+
+        public static string Nickname { get => config.Nickname; set { config.Nickname = value; SaveConfig(); } }
     }
 
     internal class ConfigPOCO
@@ -66,6 +64,8 @@ namespace VLCNotAlone.Controllers
 
         [DefaultValue("en_US")]
         public string Language { get; set; } = "en_US";
+        [DefaultValue("")]
+        public string Nickname { get; set; } = "";
 
         [DefaultValue(5000)]
         public uint FileCachingTime { get; set; } = 5000;
