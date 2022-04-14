@@ -5,11 +5,10 @@ Readme content will add later<br>
 ##### Screenshot:
 ![image](https://user-images.githubusercontent.com/42218370/159163002-c2f24dae-a036-4e54-81ce-804f767b47dc.png)
 
-
 #### TODO:
 - [X] First release
 - [X] Discord RPC
-- [ ] Nicknames
+- [X] Nicknames
 - [x] Fix server (maybe fixed)
 - [ ] Xamarin android app (WIP)
 - [ ] Documentation
