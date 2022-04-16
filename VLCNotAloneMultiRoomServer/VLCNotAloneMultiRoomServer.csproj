@@ -10,4 +10,8 @@
     <PackageReference Include="WatsonTcp" Version="4.8.14.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VLCNotAloneShared\VLCNotAloneShared.csproj" />
+  </ItemGroup>
+
 </Project>

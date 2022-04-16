@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using VLCNotAloneMultiRoomServer.Controllers;
+using VLCNotAloneMultiRoomServer.Utils;
 
 namespace VLCNotAloneMultiRoomServer
 {
@@ -10,16 +12,10 @@ namespace VLCNotAloneMultiRoomServer
         static async Task Main(string[] args)
         {
             ConfigController.Init();
-            Console.WriteLine("Starting server...");
+            Logger.WriteLine("Main", "Starting server...");
             GetExternalIp();
 
             /*
-            ServerListenerController.OnServerStarted += () => Console.WriteLine("Server started");
-            ServerListenerController.OnMessageRecived += (sender, message, metadata) => Console.WriteLine($"Server recived new message: \"{message}\" from \"{sender}\"");
-            ServerListenerController.OnClientConnected += (client) => Console.WriteLine($"New client connected: {client}");
-            ServerListenerController.OnClientConnected += (client) => ServerListenerController.SendMessage(client, "this is a test message");
-            ServerListenerController.StartServer(null, ConfigController.Port);
-
             var client = new DebugClient("localhost", ConfigController.Port);
             DebugClient.OnMessageRecived = (client, message, metadata) => {
                 Console.WriteLine($"Client recived message: \"{message}\"");
@@ -38,11 +34,11 @@ namespace VLCNotAloneMultiRoomServer
             {
                 using HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(1);
-                Console.WriteLine($"External address: {client.GetStringAsync("http://ip-api.com/line/?fields=8192").Result.TrimEnd()}:{ConfigController.Port}");
+                Logger.WriteLine("Main", $"External address: {client.GetStringAsync("http://ip-api.com/line/?fields=8192").Result.TrimEnd()}:{ConfigController.Port}");
             }
             catch
             {
-                Console.WriteLine($"External address: Error:{ConfigController.Port}");
+                Logger.WriteLine("Main", $"External address: Error:{ConfigController.Port}");
             }
         }
     }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WatsonTcp;
 
-namespace VLCNotAloneMultiRoomServer
+namespace VLCNotAloneMultiRoomServer.Controllers
 {
     internal static class ServerListenerController
     {

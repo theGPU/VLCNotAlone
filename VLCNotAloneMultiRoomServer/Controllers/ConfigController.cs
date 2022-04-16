@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VLCNotAloneMultiRoomServer
+namespace VLCNotAloneMultiRoomServer.Controllers
 {
     internal class ConfigController
     {
