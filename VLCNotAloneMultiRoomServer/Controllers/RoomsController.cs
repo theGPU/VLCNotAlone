@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VLCNotAloneMultiRoomServer.POCO;
+using VLCNotAloneShared.Enums;
 
 namespace VLCNotAloneMultiRoomServer.Controllers
 {
@@ -19,11 +20,17 @@ namespace VLCNotAloneMultiRoomServer.Controllers
             {
                 RemoveClientByAddress(client.Address);
                 RegisterClientInRoom(client, room);
+                SetRoomStage(room, new Dictionary<object, object>() { { SetRoomStageMetadataTypes.Paused, true } });
                 return true;
             }
             
             return false;
         }
+
+        public static void UpdateClientRoomStage(string client, Dictionary<object, object> data) => SetRoomStage(FindRoomWithClientByAddress(client), data);
+        public static void SetRoomStage(RoomPOCO room, Dictionary<object, object> data) => room.AuthedClients.ForEach(x => ServerController.SendRoomStage(x.Address, data));
+
+        public static ClientPOCO FindClientById(int id) => ActiveRooms.FirstOrDefault(x => x.AuthedClients.Any(x => x.Id == id))?.AuthedClients.First(x => x.Id == id);
 
         public static RoomPOCO FindRoomWithClientByAddress(string address) => ActiveRooms.FirstOrDefault(x => x.AuthedClients.Any(x => x.Address == address));
         public static RoomPOCO FindRoomWithClientByUsername(string username) => ActiveRooms.FirstOrDefault(x => x.AuthedClients.Any(x => x.Username == username));
@@ -37,6 +44,8 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         {
             RemoveClientByAddress(client.Address);
             room.AuthedClients.Add(client);
+
+            room.AuthedClients.ForEach(x => ServerController.NoticeClientConnected(x.Address, client.Username));
         }
 
         public static bool ProcessRequestRoomContent(string client)
@@ -49,6 +58,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
             if (room.AuthedClients[0] == clientInst)
                 return false;
 
+            ServerController.RequestContentFromClient(room.AuthedClients[0].Address, clientInst.Id);
             return true;
         }
     }

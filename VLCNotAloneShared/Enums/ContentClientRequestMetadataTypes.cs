@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VLCNotAloneMultiRoomServer
+namespace VLCNotAloneShared.Enums
 {
-    internal class диаграмма
+    public enum ContentClientRequestMetadataTypes
     {
+        RequesterId
     }
 }

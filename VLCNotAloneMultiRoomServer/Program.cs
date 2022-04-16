@@ -9,7 +9,7 @@ namespace VLCNotAloneMultiRoomServer
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             ConfigController.Init();
             Logger.WriteLine("Main", "Starting server...");
