@@ -26,7 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginsManager", "PluginsMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImoutoRebirth.Navigator.ApngWpfPlayer", "ImoutoRebirth.Navigator.ApngWpfPlayer\ImoutoRebirth.Navigator.ApngWpfPlayer.csproj", "{62833DA6-30CB-49E3-8741-3E68543D1524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromecastPlugin", "ChromecastPlugin\ChromecastPlugin.csproj", "{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChromecastPlugin", "ChromecastPlugin\ChromecastPlugin.csproj", "{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VLCNotAloneMultiRoomServer", "VLCNotAloneMultiRoomServer\VLCNotAloneMultiRoomServer.csproj", "{9B558975-AE04-40C8-8BA0-DE30E8281A9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
