@@ -29,13 +29,6 @@ namespace VLCNotAloneMultiRoomServer.Controllers
             ServerListenerController.StartServer(null, ConfigController.Port);
         }
 
-        static void SendHelloMessage(string client)
-        {
-            ServerListenerController.SendMessage(client, "HelloMessageFromServer", new Dictionary<object, object>() {
-                { ServerHelloMessageMetadataTypes.ServerType, ServerTypes.MultiRoom },
-            });
-        }
-
         static void ProcessClientMessage(string client, string message, Dictionary<object, object> metadata)
         {
             try
@@ -43,6 +36,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
                 ProcessClientMessageInternal(client, message, metadata);
             } catch (Exception ex)
             {
+                ServerListenerController.DisconnectClient(client, MessageStatus.Failure, "Unknown error");
                 Console.WriteLine($"{ex}");
             }
         }
@@ -77,13 +71,20 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 
         static void ProcessClientHelloMessage(string client, Dictionary<object, object> metadata)
         {
-            if (metadata[ClientHelloMessageMetadataTypes.ApiVersion].ToString() != ApiVersion)
+            if (metadata[Enum.GetName(ClientHelloMessageMetadataTypes.ApiVersion)].ToString() != ApiVersion)
             {
                 ServerListenerController.DisconnectClient(client, MessageStatus.AuthFailure, "Wrong API version");
                 return;
             }
 
             SendHelloMessage(client);
+        }
+
+        static void SendHelloMessage(string client)
+        {
+            ServerListenerController.SendMessage(client, "HelloMessageFromServer", new Dictionary<object, object>() {
+                { ServerHelloMessageMetadataTypes.ServerType, ServerTypes.MultiRoom },
+            });
         }
 
         static void ProcessGetRoomsRequest(string client)
@@ -96,7 +97,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 
         static void ProcessConnectToRoomRequest(string client, Dictionary<object, object> metadata)
         {
-            if (RoomsController.TryAuthClientInRoom(new ClientPOCO { Address = client, Id = (int) metadata[ConnectToRoomMessageMetadataTypes.ClientId], Username = metadata[ConnectToRoomMessageMetadataTypes.Username].ToString() }, metadata[ConnectToRoomMessageMetadataTypes.RoomName].ToString(), metadata[ConnectToRoomMessageMetadataTypes.Password].ToString()))
+            if (RoomsController.TryAuthClientInRoom(new ClientPOCO { Address = client, Id = (int) (long) metadata[Enum.GetName(ConnectToRoomMessageMetadataTypes.ClientId)], Username = metadata[Enum.GetName(ConnectToRoomMessageMetadataTypes.Username)].ToString() }, metadata[Enum.GetName(ConnectToRoomMessageMetadataTypes.RoomName)].ToString(), metadata[Enum.GetName(ConnectToRoomMessageMetadataTypes.Password)].ToString()))
                 ServerListenerController.SendMessage(client, "SuccessConnectToRoom");
             else
                 ServerListenerController.SendMessage(client, "FailConnectToRoom");
@@ -106,11 +107,11 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 
         static void ProcessContentClientResponse(Dictionary<object, object> metadata)
         {
-            ServerListenerController.SendMessage(RoomsController.FindClientById((int)metadata[ContentClientResponseMetadataTypes.ReciverId]).Address, "ContentSync", new Dictionary<object, object>()
+            ServerListenerController.SendMessage(RoomsController.FindClientById((int)(long)metadata[Enum.GetName(ContentClientResponseMetadataTypes.ReciverId)]).Address, "ContentSync", new Dictionary<object, object>()
             {
-                {ContentSyncMetadataTypes.Filename,  metadata[ContentClientResponseMetadataTypes.Filename]},
-                {ContentSyncMetadataTypes.Mode, metadata[ContentClientResponseMetadataTypes.Mode]},
-                {ContentSyncMetadataTypes.Position, metadata[ContentClientResponseMetadataTypes.Position]}
+                {ContentSyncMetadataTypes.Filename,  metadata[Enum.GetName(ContentClientResponseMetadataTypes.Filename)]},
+                {ContentSyncMetadataTypes.Mode, metadata[Enum.GetName(ContentClientResponseMetadataTypes.Mode)]},
+                {ContentSyncMetadataTypes.Position, metadata[Enum.GetName(ContentClientResponseMetadataTypes.Position)]}
             });
         }
 

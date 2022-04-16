@@ -55,6 +55,8 @@ namespace VLCNotAlone.Controllers
         }
 
         public static string Nickname { get => config.Nickname; set { config.Nickname = value; SaveConfig(); } }
+
+        public static bool ConnectToDefaultRoomAutomatically { get => config.ConnectToDefaultRoomAutomatically; set { config.ConnectToDefaultRoomAutomatically = value; SaveConfig(); } }
     }
 
     internal class ConfigPOCO
@@ -64,6 +66,10 @@ namespace VLCNotAlone.Controllers
 
         [DefaultValue("en_US")]
         public string Language { get; set; } = "en_US";
+
+        [DefaultValue(true)]
+        public bool ConnectToDefaultRoomAutomatically = true;
+
         [DefaultValue("")]
         public string Nickname { get; set; } = "";
 

@@ -49,9 +49,9 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         public static RoomPOCO FindRoomWithClientByUsername(string username) => ActiveRooms.FirstOrDefault(x => x.AuthedClients.Any(x => x.Username == username));
         public static RoomPOCO FindRoomWithClientById(int id) => ActiveRooms.FirstOrDefault(x => x.AuthedClients.Any(x => x.Id == id));
 
-        public static void RemoveClientByAddress(string address) => FindRoomWithClientByAddress(address).AuthedClients.RemoveAll(x => x.Address == address);
-        public static void RemoveClientByUsername(string username) => FindRoomWithClientByUsername(username).AuthedClients.RemoveAll(x => x.Username == username);
-        public static void RemoveClientById(int id) => FindRoomWithClientById(id).AuthedClients.RemoveAll(x => x.Id == id);
+        public static void RemoveClientByAddress(string address) => FindRoomWithClientByAddress(address)?.AuthedClients.RemoveAll(x => x.Address == address);
+        public static void RemoveClientByUsername(string username) => FindRoomWithClientByUsername(username)?.AuthedClients.RemoveAll(x => x.Username == username);
+        public static void RemoveClientById(int id) => FindRoomWithClientById(id)?.AuthedClients.RemoveAll(x => x.Id == id);
 
         public static void RegisterClientInRoom(ClientPOCO client, RoomPOCO room)
         {

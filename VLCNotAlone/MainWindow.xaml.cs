@@ -20,6 +20,7 @@ using VLCNotAlone.Plugins.Controllers;
 
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
 using VLCNotAlone.Utils;
+using VLCNotAloneShared.Enums;
 
 namespace VLCNotAlone
 {
@@ -36,7 +37,7 @@ namespace VLCNotAlone
         private int currentCropGeometry = 0;
         private static string[] cropGeometries = { "", "16:10", "16:9", "4:3", "13:7", "11:5", "7:3", "5:3", "5:4", "1:1" };
 
-        public readonly ClientApi clientApi = new ClientApi();
+        public readonly ClientApiV3 clientApi = new ClientApiV3();
 
         public Action<MediaPlayer> OnMediaPlayerLoaded;
 
@@ -87,7 +88,7 @@ namespace VLCNotAlone
                 LogoImagePlayer.OnPlayingEnd += () => { LogoImagePlayer.Visibility = Visibility.Collapsed; ((Grid)LogoImagePlayer.Parent).Children.Remove(LogoImagePlayer); };
             };
 
-            clientApi.OnConnectChanged += (connected) =>
+            clientApi.OnInRoomChanged += (connected) =>
             {
                 this.Dispatcher.Invoke(() =>
                 {
@@ -102,16 +103,16 @@ namespace VLCNotAlone
             {
                 mediaPlayer!.SetPause(true);
                 OnShowMessage(Localizer.DoStr("Connection"), Localizer.DoStr("aborted"));
-                clientApi.Connect(ConfigController.Nickname);
-                if (clientApi.Connected)
-                    clientApi.Pause(mediaPlayer.Time);
+                clientApi.Connect();
+                //if (clientApi.Connected)
+                //    clientApi.Pause(mediaPlayer.Time);
             };
             clientApi.OnSetTimeRecived += (time) =>
             {
                 mediaPlayer!.Time = time;
                 OnPlayerTimeChanged(time);
             };
-            clientApi.OnPause += (time) => { mediaPlayer!.SetPause(true); if (time.HasValue) mediaPlayer.Time = time.Value; };
+            clientApi.OnPause += () => mediaPlayer!.SetPause(true);
             clientApi.OnResume += () => mediaPlayer!.SetPause(false);
 
             clientApi.OnSetLocalMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Local");
@@ -129,10 +130,10 @@ namespace VLCNotAlone
                 OnShowMessage(Localizer.DoStr("Client disconnected"), endpoint);
             };
 
-            clientApi.OnWhatTime += (clientId) => 
+            clientApi.OnRequestRoomContent += (clientId) => 
             {
                 if (mediaPlayer!.Media != null)
-                    clientApi.SendWhatTimeResponce(clientId, CurrentFileMode, CurrentFileName, mediaPlayer!.Time);
+                    clientApi.SendRoomContentResponse(clientId, CurrentFileMode, CurrentFileName, mediaPlayer!.Time);
             };
             clientApi.OnWhatTimeResponce += (mode, path, time) =>
             {
@@ -160,6 +161,8 @@ namespace VLCNotAlone
             };
 
             clientApi.OnEvent += (isError, title, desc) => OnShowMessage(title, desc);
+
+            clientApi.OnHelloAccepted += () => { if (ConfigController.ConnectToDefaultRoomAutomatically) clientApi.TryConnectToDefaultRoom(); };
 
             FillServersList();
 
@@ -282,21 +285,21 @@ namespace VLCNotAlone
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-                clientApi.SetLocalMediaFile(Path.GetFileName(openFileDialog.FileName));
+                clientApi.SetMediaFile(Path.GetFileName(openFileDialog.FileName), RoomFileMode.Local);
         }
 
         private void OnOpenGlobalFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-                clientApi.SetGlobalMediaFile(Path.GetFileName(openFileDialog.FileName));
+                clientApi.SetMediaFile(Path.GetFileName(openFileDialog.FileName), RoomFileMode.Global);
         }
 
         private void OnURLEnterTextBoxKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
             {
-                clientApi.SetInternetMediaFile(((TextBox)sender).Text);
+                clientApi.SetMediaFile(((TextBox)sender).Text, RoomFileMode.Internet);
             }
         }
 
@@ -309,7 +312,7 @@ namespace VLCNotAlone
                     var hostAndPort = ((TextBox)sender).Text.Split(':');
                     clientApi.host = hostAndPort[0];
                     clientApi.port = int.Parse(hostAndPort[1]);
-                    clientApi.Connect(ConfigController.Nickname);
+                    clientApi.Connect();
                 } catch (Exception ex)
                 {
                     OnShowMessage(Localizer.DoStr("Connection"), Localizer.DoStr("Enter valid host. e.g. \"example.com:4096\""));
@@ -323,7 +326,7 @@ namespace VLCNotAlone
             var hostPort = ((string)menuItem.Header).Split(':');
             clientApi.host = hostPort[0];
             clientApi.port = int.Parse(hostPort[1]);
-            clientApi.Connect(ConfigController.Nickname);
+            clientApi.Connect();
         }
 
         private void OnProgressBarDoubleClick(object sender, MouseButtonEventArgs e)
@@ -375,14 +378,14 @@ namespace VLCNotAlone
                 case Key.Space:
                 case Key.MediaPlayPause:
                     if (mediaPlayer.IsPlaying)
-                        clientApi.Pause(mediaPlayer.Time);
+                        clientApi.SetPause(true, mediaPlayer.Time);
                     else 
-                        clientApi.Resume();
+                        clientApi.SetPause(false);
                     //mediaPlayer.Pause();
                     break;
                 case Key.MediaStop:
                     if (mediaPlayer.IsPlaying)
-                        clientApi.Pause(mediaPlayer.Time);
+                        clientApi.SetPause(true, mediaPlayer.Time);
                     break;
                 case Key.C:
                     currentCropGeometry++;

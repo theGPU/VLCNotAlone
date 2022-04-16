@@ -1,6 +1,6 @@
 [
   {
-    "Name": "TestRoom",
+    "Name": "Default",
     "IsActive": true,
     "HasPassword": false,
     "Password": ""

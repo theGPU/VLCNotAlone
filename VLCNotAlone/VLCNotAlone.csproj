@@ -37,6 +37,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.16" />
+    <PackageReference Include="WatsonTcp" Version="4.8.14.10" />
   </ItemGroup>
 
   <ItemGroup>
