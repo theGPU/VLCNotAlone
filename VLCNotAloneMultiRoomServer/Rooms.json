@@ -1,0 +1,8 @@
+[
+  {
+    "Name": "TestRoom",
+    "IsActive": true,
+    "HasPassword": false,
+    "Password": ""
+  }
+]

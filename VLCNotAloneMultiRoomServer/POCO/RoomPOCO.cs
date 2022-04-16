@@ -17,6 +17,8 @@ namespace VLCNotAloneMultiRoomServer.POCO
         [JsonIgnore]
         public List<ClientPOCO> AuthedClients { get; set; } = new List<ClientPOCO>();
 
-        public static explicit operator VLCNotAloneShared.POCO.Room(RoomPOCO room) => new VLCNotAloneShared.POCO.Room() { Name = room.Name, HasPassword = room.HasPassword };
+        public VLCNotAloneShared.POCO.Room ToShared() => new VLCNotAloneShared.POCO.Room() { Name = Name, HasPassword = HasPassword };
+
+        public static implicit operator VLCNotAloneShared.POCO.Room(RoomPOCO room) => new VLCNotAloneShared.POCO.Room() { Name = room.Name, HasPassword = room.HasPassword };
     }
 }

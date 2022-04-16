@@ -16,17 +16,17 @@ namespace VLCNotAloneMultiRoomServer.Utils
         static Logger()
         {
             Directory.CreateDirectory("./Logs");
-            LogFilePatch = Path.Combine("./Logs",DateTime.Now.ToString($"{GetCurrentLogTime()}.log"));
+            LogFilePatch = Path.Combine("./Logs",$"{GetCurrentLogTime()}.log");
         }
 
-        static string GetCurrentLogTime() => DateTime.Now.ToString("[yy-MM-dd HH:mm:ss]");
+        static string GetCurrentLogTime() => DateTime.Now.ToString("[yy-MM-dd HH-mm-ss]");
 
         public static void WriteLine(string module, string msg)
         {
             var logLine = $"{GetCurrentLogTime()} [{module}]: {msg}{Environment.NewLine}";
             lock (locker)
                 File.AppendAllText(LogFilePatch, logLine);
-            Console.WriteLine(logLine);
+            Console.Write(logLine);
         }
     }
 }

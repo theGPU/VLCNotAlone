@@ -90,7 +90,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         {
             ServerListenerController.SendMessage(client, "RoomsList", new Dictionary<object, object>()
             {
-                { RoomsListMetadataTypes.Rooms, new List<VLCNotAloneShared.POCO.Room>(RoomsController.ActiveRooms.Cast<VLCNotAloneShared.POCO.Room>()) }
+                { RoomsListMetadataTypes.Rooms, new List<VLCNotAloneShared.POCO.Room>(RoomsController.ActiveRooms.Select(x => x.ToShared())) }
             });
         }
 

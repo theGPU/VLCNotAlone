@@ -14,4 +14,10 @@
     <ProjectReference Include="..\VLCNotAloneShared\VLCNotAloneShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Rooms.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

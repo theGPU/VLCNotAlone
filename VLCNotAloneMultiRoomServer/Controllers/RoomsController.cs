@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,17 @@ namespace VLCNotAloneMultiRoomServer.Controllers
     {
         public static List<RoomPOCO> Rooms = new List<RoomPOCO>();
         public static RoomPOCO[] ActiveRooms => Rooms.Where(x => x.IsActive).ToArray();
+
+        public static void ReloadRooms()
+        {
+            var loadedRooms = JsonConvert.DeserializeObject<List<RoomPOCO>>(File.ReadAllText("Rooms.json"));
+            var roomsToDelete = Rooms.Where(x => !loadedRooms.Any(y => y.Name == x.Name)).ToList();
+            var newRooms = loadedRooms.Where(x => !Rooms.Any(y => y.Name == x.Name));
+
+            Rooms.AddRange(newRooms);
+#warning link del
+            roomsToDelete.ForEach(x => Rooms.Remove(x));
+        }
 
         public static bool TryAuthClientInRoom(ClientPOCO client, string roomName, string password)
         {
