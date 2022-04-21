@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace VLCNotAloneShared.Enums
 {
-    public enum RoomFileMode
+    public enum RoomClientsResponseMetadataTypes
     {
-        None,
-        Local,
-        Global,
-        Internet
+        Clients
     }
 }

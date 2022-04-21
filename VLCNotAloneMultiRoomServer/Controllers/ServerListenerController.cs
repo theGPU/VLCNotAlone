@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VLCNotAloneShared.Enums;
 using WatsonTcp;
 
 namespace VLCNotAloneMultiRoomServer.Controllers
@@ -32,7 +33,13 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         }
 
 #warning link reason
-        internal static void DisconnectClient(string clientAddress, MessageStatus status = MessageStatus.Normal, string reason = null) => server.DisconnectClient(clientAddress, MessageStatus.Normal, true);
+        internal static void DisconnectClient(string clientAddress, MessageStatus status = MessageStatus.Normal, string reason = null) 
+        {
+            if (reason != null)
+                server.Send(clientAddress, "DisconnectMessage", new Dictionary<object, object>() { { DisconnectMessageMetadataTypes.Message, reason } });
+
+            server.DisconnectClient(clientAddress, MessageStatus.Normal, true);
+        }
         internal static void SendMessage(string clientAddress, string message, Dictionary<object, object> metadata = null) => server.Send(clientAddress, message, metadata);
         internal static async Task SendMessageAsync(string clientAddress, string message, Dictionary<object, object> metadata = null) => await server.SendAsync(clientAddress, message, metadata);
 

@@ -4,19 +4,25 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using VLCNotAloneMultiRoomServer.Controllers;
 using VLCNotAloneMultiRoomServer.Utils;
 
 namespace VLCNotAloneMultiRoomServer
 {
-    internal class Program
+    internal class Programs
     {
         static async Task Main()
         {
             ConfigController.Init();
             Logger.WriteLine("Main", "Starting server...");
             GetExternalIp();
+
             RoomsController.ReloadRooms();
+            var roomsRefreshTimer = new Timer() { Interval = TimeSpan.FromSeconds(10).TotalMilliseconds, AutoReset = true };
+            roomsRefreshTimer.Elapsed += (s, e) => RoomsController.ReloadRooms();
+            roomsRefreshTimer.Start();
+
             ServerController.Init();
 
             /*

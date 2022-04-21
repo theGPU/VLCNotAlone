@@ -88,17 +88,34 @@ namespace VLCNotAlone
                 LogoImagePlayer.OnPlayingEnd += () => { LogoImagePlayer.Visibility = Visibility.Collapsed; ((Grid)LogoImagePlayer.Parent).Children.Remove(LogoImagePlayer); };
             };
 
-            clientApi.OnInRoomChanged += (connected) =>
+            clientApi.OnInRoomChanged += (inRoom) =>
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    MediaMenu.IsEnabled = connected;
-                    AudioMenu.IsEnabled = connected;
-                    VideoMenu.IsEnabled = connected;
-                    SubtitlesMenu.IsEnabled = connected;
-                    ServerMenu.IsEnabled = connected;
+                    MediaMenu.IsEnabled = inRoom;
+                    AudioMenu.IsEnabled = inRoom;
+                    VideoMenu.IsEnabled = inRoom;
+                    SubtitlesMenu.IsEnabled = inRoom;
+                    //ServerMenu.IsEnabled = connected;
+
+                    ClientsListMenu.IsEnabled = inRoom;
+                    UpdateClientsListMenuItem.IsEnabled = inRoom;
+                    for (var i = ClientsListMenu.Items.Count - 1; i >= 0; i--)
+                    {
+                        var item = (MenuItem)ClientsListMenu.Items[i];
+                        if (item.Name != "UpdateClientsListMenuItem")
+                            ClientsListMenu.Items.Remove(item);
+                    }
                 });
             };
+            clientApi.OnHelloAccepted += () =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    SelectRoomButton.IsEnabled = clientApi.ConnectedServerType == ServerTypes.MultiRoom;
+                });
+            };
+
             clientApi.OnDisconnect += () =>
             {
                 mediaPlayer!.SetPause(true);
@@ -112,21 +129,21 @@ namespace VLCNotAlone
                 mediaPlayer!.Time = time;
                 OnPlayerTimeChanged(time);
             };
-            clientApi.OnPause += () => mediaPlayer!.SetPause(true);
-            clientApi.OnResume += () => mediaPlayer!.SetPause(false);
 
-            clientApi.OnSetLocalMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Local");
-            clientApi.OnSetGlobalMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Global");
-            clientApi.OnSetInternetMediaFile += (mediaPath) => PlayNewFile(mediaPath, "Internet");
+            clientApi.OnSetPause += (value) => mediaPlayer!.SetPause(value);
+
+            clientApi.OnSetLocalMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Local);
+            clientApi.OnSetGlobalMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Global);
+            clientApi.OnSetInternetMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Internet);
 
             clientApi.OnClientConnected += (endpoint) =>
             {
-                mediaPlayer!.SetPause(true);
+                //mediaPlayer!.SetPause(true);
                 OnShowMessage(Localizer.DoStr("Client connected"), endpoint);
             };
             clientApi.OnClientDisconnected += (endpoint) =>
             {
-                mediaPlayer!.SetPause(true);
+                //mediaPlayer!.SetPause(true);
                 OnShowMessage(Localizer.DoStr("Client disconnected"), endpoint);
             };
 
@@ -134,11 +151,6 @@ namespace VLCNotAlone
             {
                 if (mediaPlayer!.Media != null)
                     clientApi.SendRoomContentResponse(clientId, CurrentFileMode, CurrentFileName, mediaPlayer!.Time);
-            };
-            clientApi.OnWhatTimeResponce += (mode, path, time) =>
-            {
-                PlayNewFile(path, mode);
-                mediaPlayer!.Time = time;
             };
 
             clientApi.OnClientsList += (clients) =>
@@ -163,6 +175,8 @@ namespace VLCNotAlone
             clientApi.OnEvent += (isError, title, desc) => OnShowMessage(title, desc);
 
             clientApi.OnHelloAccepted += () => { if (ConfigController.ConnectToDefaultRoomAutomatically) clientApi.TryConnectToDefaultRoom(); };
+
+            clientApi.OnConnectedChanged += (connected) => this.Dispatcher.Invoke(() => ServerMenu.IsEnabled = connected);
 
             FillServersList();
 
@@ -235,21 +249,21 @@ namespace VLCNotAlone
             return fileName;
         }
 
-        public string? CurrentFileMode { get; private set; }
+        public RoomFileMode CurrentFileMode { get; private set; }
         public string? CurrentFileName { get; private set; }
         public string? CurrentFileFullPatch { get; private set; }
         public string? CurrentVideoTitle { get; private set; }
         public Action<bool> OnPlayNewFileResult;
 
-        private bool PlayNewFile(string path, string mode)
+        private bool PlayNewFile(string path, RoomFileMode mode)
         {
             CurrentFileName = path;
             CurrentFileMode = mode;
-            var filePath = mode == "Global" ? FindGlobalFile(path) : path;
+            var filePath = mode == RoomFileMode.Global ? FindGlobalFile(path) : path;
             CurrentFileFullPatch = filePath;
 
-            var media = new Media(libVLC, filePath, mode == "Internet" ? FromType.FromLocation : FromType.FromPath);
-            if (mode == "Internet")
+            var media = new Media(libVLC, filePath, mode == RoomFileMode.Internet ? FromType.FromLocation : FromType.FromPath);
+            if (mode == RoomFileMode.Internet)
             {
                 OnShowMessage(Localizer.DoStr("Internet parser"), Localizer.DoStr("loading..."));
                 media.Parse(MediaParseOptions.ParseNetwork).Wait();
@@ -272,7 +286,7 @@ namespace VLCNotAlone
                 this.Dispatcher.Invoke(() => RefilChannelsMenus());
 
                 CurrentFileName = null;
-                CurrentFileMode = null;
+                CurrentFileMode = RoomFileMode.None;
                 CurrentFileFullPatch = null;
                 CurrentVideoTitle = null;
 
@@ -572,6 +586,12 @@ namespace VLCNotAlone
             var spuTrackNum = mediaPlayer.Spu;
             foreach (var item in SubtitlesMenu.Items.Cast<MenuItem>().Where(x => x.Tag is int))
                 item.IsChecked = spuTrackNum == (int)item.Tag;
+        }
+
+        private void OnClickSelectRoomButton(object sender, RoutedEventArgs e)
+        {
+            SelectRoomWindow selectRoomWindow = new SelectRoomWindow();
+            selectRoomWindow.ShowDialog();
         }
     }
 }

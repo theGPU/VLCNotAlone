@@ -51,9 +51,10 @@
                         <TextBox Height="20" Width="200" KeyDown="OnServerIPBoxKeyDown"/>
                     </MenuItem>
                     <MenuItem Header="Server" x:Name="ServerMenu"  IsEnabled="False">
-                        <MenuItem Header="Client list" x:Name="ClientsListMenu">
-                            <MenuItem Header="Update" Click="OnClickUpdateClientsList" x:Name="UpdateClientsListMenuItem" StaysOpenOnClick="True"/>
+                        <MenuItem Header="Client list" x:Name="ClientsListMenu" IsEnabled="False">
+                            <MenuItem Header="Update" Click="OnClickUpdateClientsList" x:Name="UpdateClientsListMenuItem" StaysOpenOnClick="True" IsEnabled="False"/>
                         </MenuItem>
+                        <MenuItem Header="Select room" x:Name="SelectRoomButton" Click="OnClickSelectRoomButton" IsEnabled="False"/>
                     </MenuItem>
                 </Menu>
                 <StackPanel Grid.Row="1" Width="300" HorizontalAlignment="Right" x:Name="MessagesStackPanel"/>

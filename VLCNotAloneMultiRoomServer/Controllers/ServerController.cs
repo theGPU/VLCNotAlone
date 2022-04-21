@@ -23,7 +23,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 
             ServerListenerController.OnClientConnected += (client) => Logger.WriteLine("ServerController", $"New client connected: {client}");
 
-            ServerListenerController.OnClientDisconnected += (client, _) => RoomsController.RemoveClientByAddress(client);
+            ServerListenerController.OnClientDisconnected += (client, _) => RoomsController.OnClientDisconnected(client);
 
             //ServerListenerController.OnClientConnected += (client) => SendHelloMessage(client);
             ServerListenerController.StartServer(null, ConfigController.Port);
@@ -63,6 +63,9 @@ namespace VLCNotAloneMultiRoomServer.Controllers
                 case "SetRoomStage":
                     ProcessSetRoomStageRequest(client, metadata);
                     break;
+                case "GetRoomClients":
+                    ProcessGetRoomClientsRequest(client);
+                    break;
                 default:
                     OnUnknownMessageRecived(client, message);
                     break;
@@ -91,7 +94,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         {
             ServerListenerController.SendMessage(client, "RoomsList", new Dictionary<object, object>()
             {
-                { RoomsListMetadataTypes.Rooms, new List<VLCNotAloneShared.POCO.Room>(RoomsController.ActiveRooms.Select(x => x.ToShared())) }
+                { RoomsListMetadataTypes.Rooms, new List<VLCNotAloneShared.POCO.Room>(RoomsController.ActiveRooms.Select(x => x.ToShared()).OrderBy(x => x.Name)) }
             });
         }
 
@@ -120,13 +123,18 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         public static void RequestContentFromClient(string client, int requesterId) => ServerListenerController.SendMessage(client, "ContentClientRequest", new Dictionary<object, object>() {{ ContentClientRequestMetadataTypes.RequesterId, requesterId }});
         public static void SendRoomStage(string client, Dictionary<object, object> args) => ServerListenerController.SendMessage(client, "SetRoomStage", args);
 
+        private static void ProcessGetRoomClientsRequest(string client)
+        {
+            var room = RoomsController.FindRoomWithClientByAddress(client);
+            ServerListenerController.SendMessage(client, "RoomClients", new Dictionary<object, object>() { { RoomClientsResponseMetadataTypes.Clients, room.AuthedClients.Select(x => x.Username).OrderBy(x => x) } });
+        }
+
         public static void NoticeClientConnected(string client, string connectedClientUsername) => ServerListenerController.SendMessage(client, "ClientConnectedNotice", new Dictionary<object, object>() { { ClientConnectedNoticeMetadataTypes.Username, connectedClientUsername } });
-#warning Link Disconnect Notice
         public static void NoticeClientDisconnected(string client, string disconnectedClientUsername) => ServerListenerController.SendMessage(client, "ClientDisconnectedNotice", new Dictionary<object, object>() { { ClientDisconnectedNoticeMetadataTypes.Username, disconnectedClientUsername } });
 
         static void OnUnknownMessageRecived(string client, string message)
         {
-            Logger.WriteLine("ServerController", "Unknown message recived from client \"{client}\"");
+            Logger.WriteLine("ServerController", $"Unknown message recived from client \"{client}\"");
             ServerListenerController.DisconnectClient(client, MessageStatus.Failure, "Unknown message");
         }
     }

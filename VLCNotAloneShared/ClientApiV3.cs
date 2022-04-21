@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,10 @@ namespace VLCNotAloneShared
         private bool _inRoom = false;
         public bool InRoom { get { return _inRoom; } set { _inRoom = value; OnInRoomChanged?.Invoke(value); } }
 
+        public Action<bool> OnConnectedChanged;
+        private bool _connected = false;
+        public bool Connected { get { return _connected; } set { _connected = value; OnConnectedChanged?.Invoke(value); } }
+
         public ServerTypes ConnectedServerType;
         public Action OnHelloAccepted;
 
@@ -33,16 +38,14 @@ namespace VLCNotAloneShared
         public Action<string> OnSetGlobalMediaFile;
         public Action<string> OnSetInternetMediaFile;
         public Action<long> OnSetTimeRecived;
-        public Action OnPause;
-        public Action OnResume;
+        public Action<bool> OnSetPause;
 
         public Action<string> OnClientConnected;
         public Action<string> OnClientDisconnected;
+        public Action<string[]> OnClientsList;
 
         public Action<int> OnRequestRoomContent;
-        public Action<string, string, long> OnWhatTimeResponce;
-
-        public Action<string[]> OnClientsList;
+        public Action<List<VLCNotAloneShared.POCO.Room>> OnRoomsList;
 
         public void Connect()
         {
@@ -62,30 +65,38 @@ namespace VLCNotAloneShared
             Client.Connect();
         }
 
+        public void ConnectToRoom(string roomName, string password)
+        {
+            OnEvent?.Invoke(true, "Room", $"Connecting to room...");
+            Client.Send("ConnectToRoom", new Dictionary<object, object>() {
+                { ConnectToRoomMessageMetadataTypes.ClientId, this.ClientId },
+                { ConnectToRoomMessageMetadataTypes.Username, this.Username ?? Environment.UserName },
+                { ConnectToRoomMessageMetadataTypes.RoomName, roomName },
+                { ConnectToRoomMessageMetadataTypes.Password, password }
+            });
+        }
+
         public void TryConnectToDefaultRoom()
         {
             if (ConnectedServerType == ServerTypes.SingleRoom)
                 return;
 
             OnEvent?.Invoke(true, "Room", $"Trying to connect to Default room...");
-            Client.Send("ConnectToRoom", new Dictionary<object, object>() {
-                { ConnectToRoomMessageMetadataTypes.ClientId, this.ClientId },
-                { ConnectToRoomMessageMetadataTypes.Username, this.Username ?? Environment.UserName },
-                { ConnectToRoomMessageMetadataTypes.RoomName, "Default" },
-                { ConnectToRoomMessageMetadataTypes.Password, "" }
-            });
+            ConnectToRoom("Default", "");
         }
 
         private void OnServerDisconnected(DisconnectionEventArgs e)
         {
             OnEvent?.Invoke(true, "Connect", $"Disconnected: {Enum.GetName(e.Reason)}");
             InRoom = false;
+            Connected = false;
         }
 
         private void OnExceptionEncountered(ExceptionEventArgs e)
         {
             OnEvent?.Invoke(true, "Connect", $"Exception: {e.Exception}");
             InRoom = false;
+            Connected = false;
         }
 
         private void OnServerConnected(ConnectionEventArgs e)
@@ -132,6 +143,15 @@ namespace VLCNotAloneShared
                 case "ContentSync":
                     OnContentSync(metadata);
                     break;
+                case "RoomsList":
+                    OnRoomsListInternal(metadata);
+                    break;
+                case "RoomClients":
+                    OnRoomClientsRecived(metadata);
+                    break;
+                case "DisconnectMessage":
+                    OnDisconnectMessage(metadata);
+                    break;
                 default:
                     break;
             }
@@ -141,6 +161,7 @@ namespace VLCNotAloneShared
         {
             OnEvent?.Invoke(false, "Connect", "Successful");
             ConnectedServerType = (ServerTypes) (long) metadata[Enum.GetName(ServerHelloMessageMetadataTypes.ServerType)];
+            Connected = true;
             OnHelloAccepted?.Invoke();
         }
 
@@ -167,10 +188,7 @@ namespace VLCNotAloneShared
             if (newStage.TryGetValue(Enum.GetName(SetRoomStageMetadataTypes.Paused), out var pausedEntry))
             {
                 var pause = (bool)pausedEntry;
-                if (pause)
-                    OnPause?.Invoke();
-                else
-                    OnResume?.Invoke();
+                OnSetPause?.Invoke(pause);
             }
 
             if (newStage.TryGetValue(Enum.GetName(SetRoomStageMetadataTypes.Position), out var positionEntry))
@@ -214,8 +232,11 @@ namespace VLCNotAloneShared
 
         public void SetTime(long time) => Client.Send("SetRoomStage", new Dictionary<object, object>() { { SetRoomStageMetadataTypes.Position, time } });
 
-#warning link
-        public void RequestClientList() { }
+        public void RequestClientList() => Client.Send("GetRoomClients");
+        public void OnRoomClientsRecived(Dictionary<object, object> metadata) => OnClientsList?.Invoke(((JArray)metadata[Enum.GetName(RoomClientsResponseMetadataTypes.Clients)]).ToObject<string[]>());
+
+        public void RequestRoomsList() => Client.Send("GetRooms");
+        private void OnRoomsListInternal(Dictionary<object, object> metadata) => OnRoomsList?.Invoke(((JArray)metadata[Enum.GetName(RoomsListMetadataTypes.Rooms)]).ToObject<List<VLCNotAloneShared.POCO.Room>>());
 
         public void SetPause(bool pause, long? time = null)
         {
@@ -226,11 +247,13 @@ namespace VLCNotAloneShared
             Client.Send("SetRoomStage", metadata);
         }
 
-        public void SendRoomContentResponse(int clientId, string currentFileMode, string currentFileName, long time) => Client.Send("ContentClientResponse", new Dictionary<object, object>() {
+        public void SendRoomContentResponse(int clientId, RoomFileMode currentFileMode, string currentFileName, long time) => Client.Send("ContentClientResponse", new Dictionary<object, object>() {
             { ContentClientResponseMetadataTypes.ReciverId, clientId },
-            { ContentClientResponseMetadataTypes.Mode, currentFileMode == "Local" ? RoomFileMode.Local : currentFileMode == "Global" ? RoomFileMode.Global : RoomFileMode.Internet },
+            { ContentClientResponseMetadataTypes.Mode, currentFileMode },
             { ContentClientResponseMetadataTypes.Filename, currentFileName },
             { ContentClientResponseMetadataTypes.Position, time }
         });
+
+        public void OnDisconnectMessage(Dictionary<object, object> metadata) => OnEvent?.Invoke(true, "DisconnectMessage", (string)metadata[Enum.GetName(DisconnectMessageMetadataTypes.Message)]);
     }
 }

@@ -22,16 +22,19 @@ namespace VLCNotAloneMultiRoomServer.Controllers
             var newRooms = loadedRooms.Where(x => !Rooms.Any(y => y.Name == x.Name));
 
             Rooms.AddRange(newRooms);
-#warning link del
             roomsToDelete.ForEach(x => Rooms.Remove(x));
+            roomsToDelete.ForEach(x => KickAllFromRoom(x));
         }
+
+        private static void KickAllFromRoom(RoomPOCO room) => room.AuthedClients.ForEach(x => ServerListenerController.DisconnectClient(x.Address, WatsonTcp.MessageStatus.Normal, "Room closed"));
 
         public static bool TryAuthClientInRoom(ClientPOCO client, string roomName, string password)
         {
             var room = ActiveRooms.FirstOrDefault(x => x.Name == roomName);
-            if (!room?.HasPassword == false || room?.Password == password)
+            if (room?.HasPassword == false || room?.Password == password)
             {
-                RemoveClientByAddress(client.Address);
+                OnClientDisconnected(client.Address);
+                //RemoveClientByAddress(client.Address);
                 RegisterClientInRoom(client, room);
                 SetRoomStage(room, new Dictionary<object, object>() { { SetRoomStageMetadataTypes.Paused, true } });
                 return true;
@@ -52,6 +55,17 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         public static void RemoveClientByAddress(string address) => FindRoomWithClientByAddress(address)?.AuthedClients.RemoveAll(x => x.Address == address);
         public static void RemoveClientByUsername(string username) => FindRoomWithClientByUsername(username)?.AuthedClients.RemoveAll(x => x.Username == username);
         public static void RemoveClientById(int id) => FindRoomWithClientById(id)?.AuthedClients.RemoveAll(x => x.Id == id);
+
+        public static void OnClientDisconnected(string address)
+        {
+            var room = FindRoomWithClientByAddress(address);
+            if (room == null)
+                return;
+
+            var client = room.AuthedClients.Find(x => x.Address == address);
+            room.AuthedClients.Remove(client);
+            room.AuthedClients.ForEach(x => ServerController.NoticeClientDisconnected(x.Address, client.Username));
+        }
 
         public static void RegisterClientInRoom(ClientPOCO client, RoomPOCO room)
         {
