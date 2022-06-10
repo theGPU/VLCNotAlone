@@ -25,8 +25,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 
             ServerListenerController.OnClientDisconnected += (client, _) => RoomsController.OnClientDisconnected(client);
 
-            //ServerListenerController.OnClientConnected += (client) => SendHelloMessage(client);
-            ServerListenerController.StartServer(null, ConfigController.Port);
+            ServerListenerController.StartServer(ConfigController.Host, ConfigController.Port);
         }
 
         static void ProcessClientMessage(string client, string message, Dictionary<object, object> metadata)
@@ -65,6 +64,8 @@ namespace VLCNotAloneMultiRoomServer.Controllers
                     break;
                 case "GetRoomClients":
                     ProcessGetRoomClientsRequest(client);
+                    break;
+                case "Ping":
                     break;
                 default:
                     OnUnknownMessageRecived(client, message);

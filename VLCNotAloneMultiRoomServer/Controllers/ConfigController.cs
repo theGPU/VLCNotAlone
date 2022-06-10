@@ -31,11 +31,14 @@ namespace VLCNotAloneMultiRoomServer.Controllers
         private static void SaveConfig() => File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(config, Formatting.Indented));
 
         public static ushort Port { get => config.Port; set { config.Port = value; SaveConfig(); } }
+        public static string Host { get => config.Host; set { config.Host = value; SaveConfig(); } }
     }
 
     internal class ConfigPOCO
     {
         [DefaultValue(4096)]
         public ushort Port = 4096;
+        [DefaultValue("0.0.0.0")]
+        public string Host = "0.0.0.0";
     }
 }

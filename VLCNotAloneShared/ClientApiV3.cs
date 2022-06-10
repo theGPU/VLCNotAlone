@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using VLCNotAloneShared.Enums;
 using WatsonTcp;
 
@@ -44,6 +45,8 @@ namespace VLCNotAloneShared
         public Action<string> OnClientDisconnected;
         public Action<string[]> OnClientsList;
 
+        public Timer PingTimer;
+
         public Action<int> OnRequestRoomContent;
         public Action<List<VLCNotAloneShared.POCO.Room>> OnRoomsList;
 
@@ -63,6 +66,11 @@ namespace VLCNotAloneShared
 
             OnEvent?.Invoke(false, "Connect", "Connecting...");
             Client.Connect();
+
+            PingTimer = new Timer();
+            PingTimer.Interval = TimeSpan.FromSeconds(5).TotalMilliseconds;
+            PingTimer.Elapsed += (s, e) => OnPingTimerElapsed();
+            PingTimer.Start();
         }
 
         public void ConnectToRoom(string roomName, string password)
@@ -84,6 +92,8 @@ namespace VLCNotAloneShared
             OnEvent?.Invoke(true, "Room", $"Trying to connect to Default room...");
             ConnectToRoom("Default", "");
         }
+
+        public void OnPingTimerElapsed() => Client.Send("Ping");
 
         private void OnServerDisconnected(DisconnectionEventArgs e)
         {
@@ -151,6 +161,8 @@ namespace VLCNotAloneShared
                     break;
                 case "DisconnectMessage":
                     OnDisconnectMessage(metadata);
+                    break;
+                case "Ping":
                     break;
                 default:
                     break;

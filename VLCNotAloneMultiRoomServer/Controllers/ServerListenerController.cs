@@ -49,5 +49,11 @@ namespace VLCNotAloneMultiRoomServer.Controllers
             server.Stop();
             server.Dispose();
         }
+
+        internal static void OnPingTimerElapsed()
+        {
+            foreach (var client in ListClients)
+                server.Send(client, "Ping");
+        }
     }
 }
