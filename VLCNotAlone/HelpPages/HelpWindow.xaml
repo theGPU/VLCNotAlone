@@ -1,0 +1,13 @@
+﻿<Window x:Class="VLCNotAlone.HelpPages.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VLCNotAlone.HelpPages"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="Help" Height="380" Width="400">
+    <Grid Background="#222226">
+        <Image Source="/VLCNotAlone;component/Resources/Images/underConstruction.png"/>
+    </Grid>
+</Window>

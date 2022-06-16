@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using VLCNotAloneMultiRoomServer.Controllers;
 using VLCNotAloneMultiRoomServer.Utils;
+using VLCNotAloneShared;
 
 namespace VLCNotAloneMultiRoomServer
 {
@@ -15,7 +16,7 @@ namespace VLCNotAloneMultiRoomServer
         static async Task Main()
         {
             ConfigController.Init();
-            Logger.WriteLine("Main", "Starting server...");
+            Logger.WriteLine("Main", $"Starting VLCNotAloneMultiRoomServer v{VersionInfo.Version} with API version: {VersionInfo.ApiVersion}...");
             GetExternalIp();
 
             RoomsController.ReloadRooms();
@@ -24,15 +25,6 @@ namespace VLCNotAloneMultiRoomServer
             roomsRefreshTimer.Start();
 
             ServerController.Init();
-
-            /*
-            var client = new DebugClient("localhost", ConfigController.Port);
-            DebugClient.OnMessageRecived = (client, message, metadata) => {
-                Console.WriteLine($"Client recived message: \"{message}\"");
-                client.SendMessage(message);
-            };
-            client.Connect();
-            */
 
             while (true)
                 await Task.Delay(1000);

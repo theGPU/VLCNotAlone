@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -89,7 +90,13 @@ namespace VLCNotAlone.Utils
                 GetMenuItemItems(i, items);
         }
 
-        public static string Do(FormattableString format) => throw new NotImplementedException();
+        public static FormattableString Do(FormattableString format)
+        {
+            var str = format.Format;
+            var localizedString = LocTables.ContainsKey(CurrentLanguage) && LocTables[CurrentLanguage].ContainsKey(str) ? LocTables[CurrentLanguage][str] : LocTables.ContainsKey(DEFAULT_LANGUAGE) && LocTables[DEFAULT_LANGUAGE].ContainsKey(str) ? LocTables[DEFAULT_LANGUAGE][str] : str;
+            var formLocalizedString = FormattableStringFactory.Create(localizedString, format.GetArguments());
+            return formLocalizedString;
+        }
 
         public static string DoStr(string str) => LocTables.ContainsKey(CurrentLanguage) && LocTables[CurrentLanguage].ContainsKey(str) ? LocTables[CurrentLanguage][str] : LocTables.ContainsKey(DEFAULT_LANGUAGE) && LocTables[DEFAULT_LANGUAGE].ContainsKey(str) ? LocTables[DEFAULT_LANGUAGE][str] : str;
     }

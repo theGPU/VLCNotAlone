@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VLCNotAloneMultiRoomServer.POCO;
 using VLCNotAloneMultiRoomServer.Utils;
+using VLCNotAloneShared;
 using VLCNotAloneShared.Enums;
 using WatsonTcp;
 
@@ -12,8 +13,6 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 {
     internal static class ServerController
     {
-        const string ApiVersion = "3";
-
         public static void Init()
         {
             ServerListenerController.OnServerStarted += () => Logger.WriteLine("ServerController", "Server started");
@@ -75,7 +74,7 @@ namespace VLCNotAloneMultiRoomServer.Controllers
 
         static void ProcessClientHelloMessage(string client, Dictionary<object, object> metadata)
         {
-            if (metadata[Enum.GetName(ClientHelloMessageMetadataTypes.ApiVersion)].ToString() != ApiVersion)
+            if (metadata[Enum.GetName(ClientHelloMessageMetadataTypes.ApiVersion)].ToString() != VersionInfo.ApiVersion)
             {
                 ServerListenerController.DisconnectClient(client, MessageStatus.AuthFailure, "Wrong API version");
                 return;

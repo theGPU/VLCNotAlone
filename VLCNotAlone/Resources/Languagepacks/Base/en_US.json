@@ -1,6 +1,6 @@
 ﻿{
 	"Media": "Media",
-	"Open file (folder)": "Open file (folder)",
+	"Open file (folder)": "Open file (local)",
 	"Open file (global)": "Open file (global)",
 	"Open URL": "Open URL",
 	"Disable": "Disable",
@@ -27,5 +27,8 @@
 	"loaded": "loaded",
 	"Load file": "Load file",
 	"Nickname": "Nickname",
-	"Select room": "Select room"
+	"Select room": "Select room",
+	"Help": "Help",
+	"About program": "About program",
+	"Version: {0} API: {1}": "Version: {0} API: {1}"
 }

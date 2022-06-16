@@ -21,6 +21,7 @@ using VLCNotAlone.Plugins.Controllers;
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
 using VLCNotAlone.Utils;
 using VLCNotAloneShared.Enums;
+using VLCNotAlone.HelpPages;
 
 namespace VLCNotAlone
 {
@@ -38,6 +39,9 @@ namespace VLCNotAlone
         private static string[] cropGeometries = { "", "16:10", "16:9", "4:3", "13:7", "11:5", "7:3", "5:3", "5:4", "1:1" };
 
         public readonly ClientApiV3 clientApi = new ClientApiV3();
+
+        public static HelpWindow? HelpWindowInstance;
+        public static AboutProgramWindow? AboutProgramWindowInstance;
 
         public Action<MediaPlayer> OnMediaPlayerLoaded;
 
@@ -60,7 +64,7 @@ namespace VLCNotAlone
 
 #if DEBUG
                 libVLC = new LibVLC("--verbose=2");
-                //libVLC.SetLogFile($"./VlcNotAloneLogs {DateTime.Now}.txt");
+                libVLC.SetLogFile($"./VlcNotAloneLogs last.txt");
 #else
                 libVLC = new LibVLC();
 #endif
@@ -132,7 +136,7 @@ namespace VLCNotAlone
 
             clientApi.OnSetPause += (value) => mediaPlayer!.SetPause(value);
 
-            clientApi.OnSetLocalMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Local);
+            //clientApi.OnSetLocalMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Local);
             clientApi.OnSetGlobalMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Global);
             clientApi.OnSetInternetMediaFile += (mediaPath) => PlayNewFile(mediaPath, RoomFileMode.Internet);
 
@@ -299,7 +303,10 @@ namespace VLCNotAlone
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
+            {
                 clientApi.SetMediaFile(Path.GetFileName(openFileDialog.FileName), RoomFileMode.Local);
+                PlayNewFile(openFileDialog.FileName, RoomFileMode.Local);
+            }
         }
 
         private void OnOpenGlobalFile(object sender, RoutedEventArgs e)
@@ -456,6 +463,12 @@ namespace VLCNotAlone
                 case Key.SelectMedia:
                     OnOpenGlobalFile(null, null);
                     break;
+                case Key.F1:
+                    if (Keyboard.IsKeyDown(Key.LeftShift))
+                        OnShowAboutProgram();
+                    else
+                        OnShowHelp();
+                    break;
             }
         }
 
@@ -592,6 +605,52 @@ namespace VLCNotAlone
         {
             SelectRoomWindow selectRoomWindow = new SelectRoomWindow();
             selectRoomWindow.ShowDialog();
+        }
+
+        private void OnClickShowHelp(object sender, RoutedEventArgs e) => OnShowHelp();
+
+        private void OnShowHelp()
+        {
+            if (HelpWindowInstance != null && (HelpWindowInstance.Visibility != Visibility.Visible || HelpWindowInstance.IsLoaded == false))
+            {
+                HelpWindowInstance.Close();
+                HelpWindowInstance = null;
+            }
+
+            if (HelpWindowInstance == null)
+            {
+                HelpWindowInstance = new HelpWindow();
+                HelpWindowInstance.Owner = this;
+                HelpWindowInstance.Show();
+            }
+            else
+            {
+                HelpWindowInstance.Close();
+                HelpWindowInstance = null;
+            }
+        }
+
+        private void OnClickShowAboutProgram(object sender, RoutedEventArgs e) => OnShowAboutProgram();
+
+        private void OnShowAboutProgram()
+        {
+            if (AboutProgramWindowInstance != null && (AboutProgramWindowInstance.Visibility != Visibility.Visible || AboutProgramWindowInstance.IsLoaded == false))
+            {
+                AboutProgramWindowInstance.Close();
+                AboutProgramWindowInstance = null;
+            }
+
+            if (AboutProgramWindowInstance == null)
+            {
+                AboutProgramWindowInstance = new AboutProgramWindow();
+                AboutProgramWindowInstance.Owner = this;
+                AboutProgramWindowInstance.Show();
+            }
+            else
+            {
+                AboutProgramWindowInstance.Close();
+                AboutProgramWindowInstance = null;
+            }
         }
     }
 }

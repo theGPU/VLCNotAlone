@@ -65,7 +65,11 @@ namespace VLCNotAloneShared
             OnInRoomChanged += (v) => { if (v) RequestRoomContent(); };
 
             OnEvent?.Invoke(false, "Connect", "Connecting...");
-            Client.Connect();
+            try
+            {
+                Client.Connect();
+            }
+            catch (Exception) { }
 
             PingTimer = new Timer();
             PingTimer.Interval = TimeSpan.FromSeconds(5).TotalMilliseconds;
@@ -100,6 +104,7 @@ namespace VLCNotAloneShared
             OnEvent?.Invoke(true, "Connect", $"Disconnected: {Enum.GetName(e.Reason)}");
             InRoom = false;
             Connected = false;
+            PingTimer.Dispose();
         }
 
         private void OnExceptionEncountered(ExceptionEventArgs e)
@@ -107,6 +112,7 @@ namespace VLCNotAloneShared
             OnEvent?.Invoke(true, "Connect", $"Exception: {e.Exception}");
             InRoom = false;
             Connected = false;
+            PingTimer?.Dispose();
         }
 
         private void OnServerConnected(ConnectionEventArgs e)
@@ -120,7 +126,7 @@ namespace VLCNotAloneShared
         {
             Client.Send("HelloMessageFromClient", new Dictionary<object, object>()
             {
-                { ClientHelloMessageMetadataTypes.ApiVersion, 3 },
+                { ClientHelloMessageMetadataTypes.ApiVersion, VersionInfo.ApiVersion },
                 { ClientHelloMessageMetadataTypes.ClientName, ClientName }
             });
         }
@@ -191,9 +197,9 @@ namespace VLCNotAloneShared
                 var mode = (RoomFileMode)(long)modeEntry;
                 switch (mode)
                 {
-                    case RoomFileMode.Local: { OnSetLocalMediaFile(filename); break; }
-                    case RoomFileMode.Global: { OnSetGlobalMediaFile(filename); break; }
-                    case RoomFileMode.Internet: { OnSetInternetMediaFile(filename); break; }
+                    case RoomFileMode.Local: { OnSetLocalMediaFile?.Invoke(filename); break; }
+                    case RoomFileMode.Global: { OnSetGlobalMediaFile?.Invoke(filename); break; }
+                    case RoomFileMode.Internet: { OnSetInternetMediaFile?.Invoke(filename); break; }
                 }
             }
 

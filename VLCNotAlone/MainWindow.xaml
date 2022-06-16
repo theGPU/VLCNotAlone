@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VLCNotAlone"
-        xmlns:properties="clr-namespace:VLCNotAlone.Properties"
         xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
         xmlns:apngPlayer="clr-namespace:ImoutoRebirth.Navigator.ApngWpfPlayer.ApngPlayer;assembly=ImoutoRebirth.Navigator.ApngWpfPlayer"
         mc:Ignorable="d"
@@ -50,11 +49,15 @@
                     <MenuItem Header="Connection" x:Name="ConnectionMenu">
                         <TextBox Height="20" Width="200" KeyDown="OnServerIPBoxKeyDown"/>
                     </MenuItem>
-                    <MenuItem Header="Server" x:Name="ServerMenu"  IsEnabled="False">
+                    <MenuItem Header="Server" x:Name="ServerMenu" IsEnabled="False">
                         <MenuItem Header="Client list" x:Name="ClientsListMenu" IsEnabled="False">
                             <MenuItem Header="Update" Click="OnClickUpdateClientsList" x:Name="UpdateClientsListMenuItem" StaysOpenOnClick="True" IsEnabled="False"/>
                         </MenuItem>
                         <MenuItem Header="Select room" x:Name="SelectRoomButton" Click="OnClickSelectRoomButton" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Help" x:Name="HelpMenu">
+                        <MenuItem Header="Help (F1)" x:Name="HelpButton" Click="OnClickShowHelp"/>
+                        <MenuItem Header="About program (Shift+F1)" x:Name="AboutProgramButton" Click="OnClickShowAboutProgram"/>
                     </MenuItem>
                 </Menu>
                 <StackPanel Grid.Row="1" Width="300" HorizontalAlignment="Right" x:Name="MessagesStackPanel"/>
