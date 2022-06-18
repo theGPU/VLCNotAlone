@@ -8,7 +8,7 @@ namespace VLCNotAloneShared
 {
     public static class VersionInfo
     {
-        public const string Version = "2.1.0";
+        public const string Version = "2.1.1";
         public const string ApiVersion = "4";
     }
 }

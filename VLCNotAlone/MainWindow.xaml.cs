@@ -17,11 +17,11 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using VLCNotAlone.Controllers;
 using VLCNotAlone.Plugins.Controllers;
-
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
 using VLCNotAlone.Utils;
 using VLCNotAloneShared.Enums;
 using VLCNotAlone.HelpPages;
+using VLCNotAlone.InstallerShared;
 
 namespace VLCNotAlone
 {
@@ -90,6 +90,9 @@ namespace VLCNotAlone
 
                 LogoImagePlayer.Visibility = ConfigController.ShowLogo ? Visibility.Visible : Visibility.Collapsed;
                 LogoImagePlayer.OnPlayingEnd += () => { LogoImagePlayer.Visibility = Visibility.Collapsed; ((Grid)LogoImagePlayer.Parent).Children.Remove(LogoImagePlayer); };
+
+                if (ConfigController.CheckForUpdatesAtStartup)
+                    Task.Run(CheckForUpdates);
             };
 
             clientApi.OnInRoomChanged += (inRoom) =>
@@ -202,6 +205,21 @@ namespace VLCNotAlone
             {
                 NicknameTextBox.Text = ConfigController.Nickname;
             };
+        }
+
+        private void CheckForUpdates()
+        {
+            var latestTag = GitHubController.GetTags().LastOrDefault();
+            if (latestTag == null)
+                return;
+            if (latestTag != $"v{VersionInfo.Version}")
+            {
+                if (MessageBox.Show(Localizer.Do($"Current client versiont is {$"v{VersionInfo.Version}"}\nUpdate to {latestTag}?").ToString(), Localizer.DoStr("UpdateTitle"), MessageBoxButton.YesNo, MessageBoxImage.None) == MessageBoxResult.Yes)
+                {
+                    Process.Start("./Updater.exe");
+                    Process.GetCurrentProcess().Kill();
+                }
+            }
         }
 
         private void FillServersList()

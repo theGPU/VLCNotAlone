@@ -28,7 +28,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImoutoRebirth.Navigator.Apn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChromecastPlugin", "ChromecastPlugin\ChromecastPlugin.csproj", "{6C4213E1-1792-4AB1-8083-ABE74EA3C92C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VLCNotAloneMultiRoomServer", "VLCNotAloneMultiRoomServer\VLCNotAloneMultiRoomServer.csproj", "{9B558975-AE04-40C8-8BA0-DE30E8281A9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VLCNotAloneMultiRoomServer", "VLCNotAloneMultiRoomServer\VLCNotAloneMultiRoomServer.csproj", "{9B558975-AE04-40C8-8BA0-DE30E8281A9D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{8C35266D-5F7A-4DA2-82A8-63BF4A6B3F7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VLCNotAlone.Installer", "VLCNotAlone.Installer\VLCNotAlone.Installer.csproj", "{83077253-2FEB-4DE4-8C9D-8985C3E876E4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VLCNotAlone.InstallerShared", "VLCNotAlone.InstallerSharedLib\VLCNotAlone.InstallerShared.csproj", "{5626344A-9CD3-468A-A97E-54793E54C337}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VLCNotAlone.AutoUpdater", "VLCNotAlone.AutoUpdater\VLCNotAlone.AutoUpdater.csproj", "{DA1B16DF-0050-4D7B-BE6F-94D39A83C0C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,9 +82,26 @@ Global
 		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B558975-AE04-40C8-8BA0-DE30E8281A9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83077253-2FEB-4DE4-8C9D-8985C3E876E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83077253-2FEB-4DE4-8C9D-8985C3E876E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83077253-2FEB-4DE4-8C9D-8985C3E876E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83077253-2FEB-4DE4-8C9D-8985C3E876E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5626344A-9CD3-468A-A97E-54793E54C337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5626344A-9CD3-468A-A97E-54793E54C337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5626344A-9CD3-468A-A97E-54793E54C337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5626344A-9CD3-468A-A97E-54793E54C337}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA1B16DF-0050-4D7B-BE6F-94D39A83C0C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA1B16DF-0050-4D7B-BE6F-94D39A83C0C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA1B16DF-0050-4D7B-BE6F-94D39A83C0C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA1B16DF-0050-4D7B-BE6F-94D39A83C0C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{83077253-2FEB-4DE4-8C9D-8985C3E876E4} = {8C35266D-5F7A-4DA2-82A8-63BF4A6B3F7F}
+		{5626344A-9CD3-468A-A97E-54793E54C337} = {8C35266D-5F7A-4DA2-82A8-63BF4A6B3F7F}
+		{DA1B16DF-0050-4D7B-BE6F-94D39A83C0C8} = {8C35266D-5F7A-4DA2-82A8-63BF4A6B3F7F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F0EB5CA-A709-4019-9318-D49589301950}

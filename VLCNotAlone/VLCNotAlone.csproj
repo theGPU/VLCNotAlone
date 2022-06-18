@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>logo.ico</ApplicationIcon>
+    <Version>$(VersionPrefix)</Version>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,6 +49,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ImoutoRebirth.Navigator.ApngWpfPlayer\ImoutoRebirth.Navigator.ApngWpfPlayer.csproj" />
     <ProjectReference Include="..\PluginsManager\PluginsManager.csproj" />
+    <ProjectReference Include="..\VLCNotAlone.InstallerSharedLib\VLCNotAlone.InstallerShared.csproj" />
     <ProjectReference Include="..\VLCNotAloneShared\VLCNotAloneShared.csproj" />
   </ItemGroup>
 

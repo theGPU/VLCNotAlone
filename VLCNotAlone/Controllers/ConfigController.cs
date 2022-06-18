@@ -56,27 +56,19 @@ namespace VLCNotAlone.Controllers
 
         public static string Nickname { get => config.Nickname; set { config.Nickname = value; SaveConfig(); } }
 
+        public static bool CheckForUpdatesAtStartup { get => config.CheckForUpdatesAtStartup; set { config.CheckForUpdatesAtStartup = value; SaveConfig(); } }
+
         public static bool ConnectToDefaultRoomAutomatically { get => config.ConnectToDefaultRoomAutomatically; set { config.ConnectToDefaultRoomAutomatically = value; SaveConfig(); } }
     }
 
     internal class ConfigPOCO
     {
-        [DefaultValue(true)]
-        public bool ShowLogo { get; set; } = true;
-
-        [DefaultValue("en_US")]
-        public string Language { get; set; } = "en_US";
-
-        [DefaultValue(true)]
-        public bool ConnectToDefaultRoomAutomatically = true;
-
-        [DefaultValue("")]
-        public string Nickname { get; set; } = "";
-
-        [DefaultValue(5000)]
-        public uint FileCachingTime { get; set; } = 5000;
-
-        [DefaultValue(5000)]
-        public uint NetworkCachingTime { get; set; } = 5000;
+        [DefaultValue(true)] public bool ShowLogo { get; set; } = true;
+        [DefaultValue("en_US")] public string Language { get; set; } = "en_US";
+        [DefaultValue(true)] public bool CheckForUpdatesAtStartup { get; set; } = true;
+        [DefaultValue(true)] public bool ConnectToDefaultRoomAutomatically { get; set; } = true;
+        [DefaultValue("")] public string Nickname { get; set; } = "";
+        [DefaultValue(5000)] public uint FileCachingTime { get; set; } = 5000;
+        [DefaultValue(5000)] public uint NetworkCachingTime { get; set; } = 5000;
     }
 }

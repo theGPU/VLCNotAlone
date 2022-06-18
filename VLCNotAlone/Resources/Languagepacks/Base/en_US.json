@@ -30,5 +30,7 @@
 	"Select room": "Select room",
 	"Help": "Help",
 	"About program": "About program",
-	"Version: {0} API: {1}": "Version: {0} API: {1}"
+	"Version: {0} API: {1}": "Version: {0} API: {1}",
+	"Current client versiont is {0}\nUpdate to {1}?": "Current client versiont is {0}\nUpdate to {1}?", 
+	"UpdateTitle": "Update"
 }

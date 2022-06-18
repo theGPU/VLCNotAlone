@@ -43,7 +43,6 @@ namespace VLCNotAlone.Utils
             FillLanguageMenuitem();
 
             OnLanguageChanged += OnLanguageChangedDefault;
-
             OnLanguageChanged?.Invoke();
         }
 
@@ -59,9 +58,6 @@ namespace VLCNotAlone.Utils
         private static void OnChangeLanguage(object sender, RoutedEventArgs e)
         {
             ConfigController.Language = (string)((MenuItem)sender).Tag;
-            //LanguagesOptionsItems.ForEach(x => x.IsChecked = CurrentLanguage == (string)x.Tag);
-
-            //OnLanguageChanged?.Invoke();
             System.Windows.Forms.Application.Restart();
             System.Windows.Application.Current.Shutdown();
         }

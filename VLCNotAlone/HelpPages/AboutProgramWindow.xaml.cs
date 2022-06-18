@@ -30,13 +30,6 @@ namespace VLCNotAlone.HelpPages
             this.VersionLabel.Content = Localizer.Do($"Version: {VersionInfo.Version} API: {VersionInfo.ApiVersion}");
         }
 
-        private void OnClickOpenGitHubPage(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://github.com/titaniumX712/VLCNotAlone",
-                UseShellExecute = true
-            });
-        }
+        private void OnClickOpenGitHubPage(object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(new ProcessStartInfo { FileName = "https://github.com/titaniumX712/VLCNotAlone", UseShellExecute = true });
     }
 }
