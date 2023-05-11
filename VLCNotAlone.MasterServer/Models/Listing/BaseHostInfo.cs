@@ -12,11 +12,9 @@ namespace VLCNotAlone.MasterServer.Models.Listing
         public ushort Port { get; set; }
 
         public bool IsPublic { get; set; }
-        [StringLength(256)] public string? Password { get; set; }
+        public bool HasPassword { get; set; }
         public int ProtocolVersion { get; set; }
         public int ClientsCount { get; set; }
         public int RoomsCount { get; set; }
-
-        public bool HasPassword => string.IsNullOrEmpty(Password);
     }
 }
