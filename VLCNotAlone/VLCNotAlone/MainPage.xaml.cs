@@ -11,6 +11,8 @@ namespace VLCNotAlone
 {
     public partial class MainPage : ContentPage
     {
+        public static bool Pushed = false;
+
         public MainPage()
         {
             InitializeComponent();
