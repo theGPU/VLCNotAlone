@@ -22,6 +22,7 @@ namespace VLCNotAlone.MasterServer.Services.ServerRegistrar
         {
             if (ipAddress == null)
                 return MasterServerError.CannnotGetIPAddress;
+
             ipAddress = ipAddress.MapToIPv6();
 
             if (!_serverRegistry.HasOfficialServer(registerHostInfo.ID) && _serverBanManager.IsServerBanned(ipAddress, registerHostInfo))
@@ -43,12 +44,15 @@ namespace VLCNotAlone.MasterServer.Services.ServerRegistrar
                     hostInfo.ClientsCount = registerHostInfo.ClientsCount;
                     hostInfo.RoomsCount = registerHostInfo.RoomsCount;
 
+                    hostInfo.IsOfficial = _serverRegistry.HasOfficialServer(registerHostInfo.ID);
+
                     hostInfo.LastUpdated = DateTime.Now;
                     return MasterServerError.NoError;
                 }
             } else
             {
                 var newHostInfo = registerHostInfo.ToHostInfo();
+                newHostInfo.IsOfficial = _serverRegistry.HasOfficialServer(registerHostInfo.ID);
                 newHostInfo.IpAddress = ipAddress;
                 CheckExternallAccess(newHostInfo);
                 newHostInfo.LastUpdated = DateTime.Now;

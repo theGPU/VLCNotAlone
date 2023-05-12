@@ -1,9 +1,10 @@
 ﻿using System.Net;
 
-namespace VLCNotAlone.MasterServer.Models.Listing
+namespace VLCNotAlone.Shared.Models
 {
     public class ListingHostInfo : BaseHostInfo
     {
         public IPAddress IpAddress { get; set; }
+        public bool IsOfficial { get; set; }
     }
 }

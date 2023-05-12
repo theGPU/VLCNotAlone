@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using VLCNotAlone.Networking;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,13 +15,9 @@ namespace VLCNotAlone
         public ServerSelectionPage()
         {
             InitializeComponent();
-            Navigation.PushModalAsync(new MainPage());
+            //Navigation.PushModalAsync(new MainPage());
         }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            
-        }
+
     }
 }

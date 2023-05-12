@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using VLCNotAlone.Shared.Models;
 
 namespace VLCNotAlone.MasterServer.Models.Listing
 {

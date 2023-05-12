@@ -1,3 +1,1 @@
-{
-  "RegisteredHosts": {}
-}
+{"RegisteredHosts":{"926cb613-c391-47a3-a5c4-a540c1588897":{"Passport":"2cf19dbf-b2da-4b96-bbd2-248740892414","CheckSucceed":true,"LastUpdated":"2023-05-12T18:54:21.9918617+03:00","IpAddress":"::ffff:37.113.1.150","IsOfficial":false,"ID":"926cb613-c391-47a3-a5c4-a540c1588897","Name":"Postman test server","Description":null,"Port":60121,"IsPublic":true,"HasPassword":false,"ProtocolVersion":1,"ClientsCount":100,"RoomsCount":30}}}

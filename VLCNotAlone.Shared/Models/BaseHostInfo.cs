@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Configuration;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace VLCNotAlone.MasterServer.Models.Listing
+namespace VLCNotAlone.Shared.Models
 {
     public class BaseHostInfo
     {
