@@ -6,6 +6,8 @@ namespace VLCNotAlone.Shared
 {
     public class Constants
     {
+        public const string AppVersion = "3.0.0";
+
         public const ushort MasterServerPort = 7132;
         public static readonly string MasterServerUrl = $"https://localhost:{MasterServerPort}";
 

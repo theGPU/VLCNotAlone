@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VLCNotAlone.Shared;
 using VLCNotAlone.Shared.Models;
@@ -20,12 +22,15 @@ namespace VLCNotAlone.Networking
         public event Action<string, bool, Exception> OnDisconnected; //msg, isException, Exception?
         public event Action OnReconnecting;
         public event Action OnReconnected;
+        public event Action<Exception> OnHubError;
 
         public event Action<ListingHostInfo> ServerDiscovered;
         public event Action<ListingHostInfo> OfficialServerDiscovered;
         public event Action<Exception> MasterServerClientThrowDiscoverError;
 
         private readonly MasterServerClient masterServerClient;
+
+        private CancellationToken _cancellationToken;
 
         private NetworkClient()
         {
@@ -61,18 +66,22 @@ namespace VLCNotAlone.Networking
 
         #region Client
 
-        public async Task<Exception> TryConnectTo(string server)
+        public async Task<Exception> TryConnectTo(string server, CancellationToken cancellationToken = default)
         {
-            connection = new HubConnectionBuilder().WithUrl(server).WithAutomaticReconnect(Enumerable.Range(0, 30).Select(x => TimeSpan.FromSeconds(2)).ToArray()).Build();
-            connection.KeepAliveInterval = Constants.ClientToServerKeepAliveInterval;
-            connection.Closed += OnHubConnectionClosed;
-            connection.Reconnecting += OnHubConnectionReconnecting;
-            connection.Reconnected += OnHubConnectionReconnected;
-            RegisterDefaultListeners();
-
+            _cancellationToken = cancellationToken;
             try
             {
-                await connection.StartAsync();
+                if (connection != null)
+                    await connection.DisposeAsync();
+
+                connection = new HubConnectionBuilder().WithUrl(server).WithAutomaticReconnect(Enumerable.Range(0, 30).Select(x => TimeSpan.FromSeconds(2)).ToArray()).Build();
+                connection.KeepAliveInterval = Constants.ClientToServerKeepAliveInterval;
+                connection.Closed += OnHubConnectionClosed;
+                connection.Reconnecting += OnHubConnectionReconnecting;
+                connection.Reconnected += OnHubConnectionReconnected;
+                RegisterDefaultListeners();
+            
+                await connection.StartAsync(_cancellationToken);
                 OnConnected?.Invoke();
             }
             catch (Exception ex)
@@ -102,20 +111,43 @@ namespace VLCNotAlone.Networking
             OnReconnected?.Invoke();
         }
 
-        #endregion CLient
+        #endregion Client
+
+        #region ClientRPC
+
+        #endregion
 
         #region ServerRPC
 
-        public async Task Send(string username, string message)
+        public async Task<BaseHostInfo> RequestHostInfo()
         {
-            await connection.InvokeAsync("Send", username, message);
+            return await RPC<BaseHostInfo>("GetHostInfo", new object[] { }, _cancellationToken);
+        }
+
+        private async Task<T> RPC<T>(string methodName, object[] args, CancellationToken cancellationToken = default) where T : class
+        {
+            try
+            {
+                return await connection.InvokeCoreAsync<T>(methodName, args, _cancellationToken);
+            } catch (Exception ex)
+            {
+                OnHubError?.Invoke(ex);
+            }
+
+            return null;
         }
 
         #endregion ServerRPC
 
+        public void DisposeConnection()
+        {
+            connection.DisposeAsync();
+        }
+
         public void Dispose()
         {
             masterServerClient.Dispose();
+            connection.DisposeAsync();
         }
     }
 }

@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace VLCNotAlone
+namespace VLCNotAlone.Pages
 {
     public class MainViewModel : INotifyPropertyChanged
     {

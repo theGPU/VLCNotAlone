@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:VLCNotAlone"
              xmlns:extensions="clr-namespace:VLCNotAlone.Extensions"
-             x:Class="VLCNotAlone.LogoScreenPage">
+             x:Class="VLCNotAlone.Pages.LogoScreenPage">
     <ContentPage.Content>
         <AbsoluteLayout SizeChanged="OnLayoutSizeChanged">
             <Image Source="{extensions:ImageResource VLCNotAlone.Resources.Images.LogoScreen.OrangeLogo.png}"

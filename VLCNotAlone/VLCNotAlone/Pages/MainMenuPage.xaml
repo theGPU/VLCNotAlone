@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VLCNotAlone.Pages.MainMenuPage"
+             NavigationPage.HasNavigationBar="false">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label x:Name="versionLabel" HorizontalOptions="Center" FontSize="15"/>
+            <Button Text="Settings" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenSettingsMenu"/>
+            <Button Text="Discover servers" WidthRequest="200" HorizontalOptions="Center"/>
+            <Button Text="Favorites" WidthRequest="200" HorizontalOptions="Center"/>
+            <Button Text="Officials" WidthRequest="200" HorizontalOptions="Center"/>
+            <Button Text="Direct connect" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenDirectConnectionPage"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

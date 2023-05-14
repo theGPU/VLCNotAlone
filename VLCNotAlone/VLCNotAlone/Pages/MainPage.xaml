@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:shared="clr-namespace:LibVLCSharp.Forms.Shared;assembly=LibVLCSharp.Forms"
-             xmlns:local="clr-namespace:VLCNotAlone"
-             x:Class="VLCNotAlone.MainPage">
+             xmlns:local="clr-namespace:VLCNotAlone.Pages"
+             x:Class="VLCNotAlone.Pages.MainPage">
 
     <ContentPage.BindingContext>
         <local:MainViewModel />

@@ -1,7 +1,6 @@
-﻿using System.Net;
-using VLCNotAlone.Shared.Models;
+﻿using System;
 
-namespace VLCNotAlone.MasterServer.Models.Listing
+namespace VLCNotAlone.Shared.Models
 {
     public class HostInfo : ListingHostInfo
     {
@@ -18,7 +17,7 @@ namespace VLCNotAlone.MasterServer.Models.Listing
                 IpAddress = IpAddress,
                 Port = Port,
                 IsPublic = IsPublic,
-                ProtocolVersion = ProtocolVersion,
+                ServerVersion = ServerVersion,
                 ClientsCount = ClientsCount,
                 RoomsCount = RoomsCount
             };

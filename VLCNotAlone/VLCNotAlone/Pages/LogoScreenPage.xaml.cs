@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace VLCNotAlone
+namespace VLCNotAlone.Pages
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LogoScreenPage : ContentPage
@@ -33,7 +30,7 @@ namespace VLCNotAlone
             BlueLogo.IsVisible = true;
             await BlueLogo.TranslateTo(0, 0, 1000).ContinueWith(task => Device.BeginInvokeOnMainThread(async () =>
             {
-                await Navigation.PushAsync(new ServerSelectionPage());
+                await Navigation.PushAsync(new MainMenuPage());
                 Navigation.RemovePage(this);
             }));
         }

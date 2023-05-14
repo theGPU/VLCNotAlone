@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VLCNotAlone.Networking;
+
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace VLCNotAlone
+namespace VLCNotAlone.Resources.Themes
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ServerSelectionPage : ContentPage
+    public partial class DarkTheme : ResourceDictionary
     {
-        public ServerSelectionPage()
+        public DarkTheme()
         {
             InitializeComponent();
-            //Navigation.PushModalAsync(new MainPage());
         }
-
-
     }
 }

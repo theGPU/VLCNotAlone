@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VLCNotAlone.Pages.MainMenuSettingsPage">
+    <ContentPage.Content>
+        <ScrollView>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Text="Nickname" Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center"/>
+                <Entry x:Name="nicknameEntry" Placeholder="Nickname" Grid.Row="0" Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Center" MaxLength="32" IsTextPredictionEnabled="False" TextChanged="OnNicknameChanged"/>
+
+                <Label Text="Admin token" Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center"/>
+                <Entry x:Name="adminTokenEntry" Placeholder="Token" Grid.Row="1" Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Center" MaxLength="32" IsTextPredictionEnabled="False" TextChanged="OnAdminTokenChanged"/>
+
+                <Label Text="Use hardware acceleration" Grid.Row="2" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center"/>
+                <CheckBox x:Name="useHardwareAccelerationCheckBox" IsChecked="False" Grid.Row="2" Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Center" CheckedChanged="OnUseHardwareAccelerationChanged"/>
+            </Grid>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

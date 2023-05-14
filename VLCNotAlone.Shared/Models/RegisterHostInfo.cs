@@ -1,7 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using VLCNotAlone.Shared.Models;
 
-namespace VLCNotAlone.MasterServer.Models.Listing
+namespace VLCNotAlone.Shared.Models
 {
     public class RegisterHostInfo : BaseHostInfo
     {
@@ -16,7 +17,7 @@ namespace VLCNotAlone.MasterServer.Models.Listing
                 Name = Name,
                 Port = Port,
                 IsPublic = IsPublic,
-                ProtocolVersion = ProtocolVersion,
+                ServerVersion = ServerVersion,
                 ClientsCount = ClientsCount,
                 RoomsCount = RoomsCount
             };

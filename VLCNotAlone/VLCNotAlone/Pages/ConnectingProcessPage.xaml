@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:VLCNotAlone.Pages"
+             x:DataType="pages:ConnectingProcessPage"
+             x:Class="VLCNotAlone.Pages.ConnectingProcessPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Text="Status list:"  Grid.Row="0"/>
+            <ListView x:Name="connectingStatusList" ItemsSource="{Binding StatusList}" Grid.Row="1" SelectionMode="None"/>
+            <Button Text="Cancel" x:Name="Cancel" Grid.Row="2" HorizontalOptions="Center" WidthRequest="100" Clicked="OnCancelClicked"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

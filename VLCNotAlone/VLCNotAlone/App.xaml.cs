@@ -1,6 +1,5 @@
-﻿using System;
+﻿using VLCNotAlone.Pages;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace VLCNotAlone
 {
@@ -10,7 +9,11 @@ namespace VLCNotAlone
         {
             InitializeComponent();
 
+#if DEBUG
+            MainPage = new NavigationPage(new MainMenuPage());
+#else
             MainPage = new NavigationPage(new LogoScreenPage());
+#endif
         }
 
         protected override void OnStart()
