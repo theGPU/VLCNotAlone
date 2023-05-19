@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using VLCNotAlone.Networking;
+using VLCNotAlone.Services.Networking;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
