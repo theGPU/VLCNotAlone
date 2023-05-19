@@ -7,9 +7,9 @@
         <StackLayout>
             <Label x:Name="versionLabel" HorizontalOptions="Center" FontSize="15"/>
             <Button Text="Settings" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenSettingsMenu"/>
-            <Button Text="Discover servers" WidthRequest="200" HorizontalOptions="Center"/>
-            <Button Text="Favorites" WidthRequest="200" HorizontalOptions="Center"/>
-            <Button Text="Officials" WidthRequest="200" HorizontalOptions="Center"/>
+            <Button Text="Discover servers" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenServersDiscoverMenu"/>
+            <Button Text="Favorites" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenFavoriteServersMenu"/>
+            <Button Text="Officials" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenOfficialServersMenu"/>
             <Button Text="Direct connect" WidthRequest="200" HorizontalOptions="Center" Clicked="OpenDirectConnectionPage"/>
         </StackLayout>
     </ContentPage.Content>

@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using VLCNotAlone.MasterServer.Models.Listing;
 using VLCNotAlone.MasterServer.Services.ServerRegistry;
 using VLCNotAlone.Shared;
+using VLCNotAlone.Shared.Models;
 
 namespace VLCNotAlone.MasterServer.Services.ServerRegistrar
 {
@@ -37,7 +37,6 @@ namespace VLCNotAlone.MasterServer.Services.ServerRegistrar
                 {
                     hostInfo.IpAddress = ipAddress;
                     hostInfo.Port = registerHostInfo.Port;
-                    hostInfo.ProtocolVersion = registerHostInfo.ProtocolVersion;
 
                     hostInfo.Name = registerHostInfo.Name;
                     hostInfo.IsPublic = registerHostInfo.IsPublic;

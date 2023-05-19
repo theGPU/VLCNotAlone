@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using VLCNotAlone.MasterServer.Models.Listing;
+using VLCNotAlone.Shared.Models;
 
 namespace VLCNotAlone.MasterServer.Services.ServerRegistry
 {

@@ -29,23 +29,63 @@ namespace VLCNotAlone.Pages
         protected override void OnAppearing()
         {
             StatusList.Add($"Connecting to {_serverUrl}...");
-            Task.Run(Connect);
+            Task.Run(Connect).ContinueWith(t => StatusList.Add($"Error in connect method: {t.Exception.InnerException.Message}"), TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private async Task Connect()
         {
             NetworkClient.Obj.OnConnected += OnConnected;
-            NetworkClient.Obj.OnDisconnected += Obj_OnDisconnected;
-            NetworkClient.Obj.OnReconnecting += Obj_OnReconnecting;
-            NetworkClient.Obj.OnReconnected += Obj_OnReconnected;
+            NetworkClient.Obj.OnDisconnected += OnDisconnected;
+            NetworkClient.Obj.OnReconnecting += OnReconnecting;
+            NetworkClient.Obj.OnReconnected += OnReconnected;
+            NetworkClient.Obj.OnHubError += OnHubError;
 
             var exception = await NetworkClient.Obj.TryConnectTo(_serverUrl);
             if (exception != null)
             {
                 OnError(exception.Message);
+                return;
             }
 
             StatusList.Add("Requesting server info...");
+            NetworkClient.Obj.ClearConnectionData();
+            NetworkClient.Obj.ConnectionData.HostInfo = await NetworkClient.Obj.RequestHostInfo();
+            StatusList.Add("Host info recieved");
+            StatusList.Add($"Sync to {NetworkClient.Obj.ConnectionData.HostInfo.Name}...");
+            if (NetworkClient.Obj.ConnectionData.HostInfo.HasPassword)
+            {
+                var passwordEnterPage = new PasswordEnterPage();
+                passwordEnterPage.Disappearing += (object sender, EventArgs e) => _ = OnPasswordEnteringComplete(passwordEnterPage.Password);
+                Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(passwordEnterPage));
+            } else
+            {
+                _ = OnPasswordEnteringComplete("");
+            }
+        }
+
+        private async Task OnPasswordEnteringComplete(string password)
+        {
+            if (string.IsNullOrEmpty(password) && NetworkClient.Obj.ConnectionData.HostInfo.HasPassword)
+            {
+                StatusList.Add("Canceled by user");
+                return;
+            }
+
+            await NetworkClient.Obj.CheckPassword(password);
+            _ = Task.Run(GetRoomsList).ContinueWith(t => StatusList.Add($"Error in GetRoomsList method: {t.Exception.InnerException.Message}"), TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        private async Task GetRoomsList()
+        {
+            StatusList.Add("Requesting rooms...");
+            var rooms = await NetworkClient.Obj.RequestRoomsList();
+
+            NetworkClient.Obj.ConnectionData.Rooms.Clear();
+            rooms.ToList().ForEach(x => NetworkClient.Obj.ConnectionData.Rooms.AddOrUpdate(x.Id, x, (k, v) => x));
+
+            _keepConnectionOnDisappearing = true;
+            var serverOverviewPage = new ServerOverviewPage();
+            Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(serverOverviewPage));
         }
 
         private void OnConnected()
@@ -53,7 +93,7 @@ namespace VLCNotAlone.Pages
             StatusList.Add("Connected");
         }
 
-        private void Obj_OnDisconnected(string reason, bool isException, Exception exception)
+        private void OnDisconnected(string reason, bool isException, Exception exception)
         {
             if (isException)
                 StatusList.Add(exception.Message);
@@ -61,14 +101,19 @@ namespace VLCNotAlone.Pages
             StatusList.Add($"Disconnected");
         }
 
-        private void Obj_OnReconnecting()
+        private void OnReconnecting()
         {
             StatusList.Add($"Reconnecting...");
         }
 
-        private void Obj_OnReconnected()
+        private void OnReconnected()
         {
             StatusList.Add($"Reconnected");
+        }
+
+        private void OnHubError(Exception obj)
+        {
+            StatusList.Add($"Hub error: {obj.Message}");
         }
 
         private void OnError(string error)
@@ -81,9 +126,10 @@ namespace VLCNotAlone.Pages
         {
             base.OnDisappearing();
             NetworkClient.Obj.OnConnected -= OnConnected;
-            NetworkClient.Obj.OnDisconnected -= Obj_OnDisconnected;
-            NetworkClient.Obj.OnReconnecting -= Obj_OnReconnecting;
-            NetworkClient.Obj.OnReconnected -= Obj_OnReconnected;
+            NetworkClient.Obj.OnDisconnected -= OnDisconnected;
+            NetworkClient.Obj.OnReconnecting -= OnReconnecting;
+            NetworkClient.Obj.OnReconnected -= OnReconnected;
+            NetworkClient.Obj.OnHubError -= OnHubError;
 
             if (!_keepConnectionOnDisappearing)
             {

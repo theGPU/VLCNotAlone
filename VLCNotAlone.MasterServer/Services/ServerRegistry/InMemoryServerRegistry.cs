@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using VLCNotAlone.MasterServer.Models.Listing;
 using VLCNotAlone.Shared;
-using VLCNotAlone.Shared.Utils.Serializer;
+using VLCNotAlone.Shared.Models;
 
 namespace VLCNotAlone.MasterServer.Services.ServerRegistry
 {

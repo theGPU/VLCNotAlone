@@ -10,6 +10,8 @@ namespace VLCNotAlone.Server
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddSignalR();
             builder.Services.AddSingleton<RemoteConfigService>();
+            builder.Services.AddSingleton<ServerAuthorizationService>();
+            builder.Services.AddSingleton<RoomsService>();
             builder.Services.AddSingleton<MasterServerClientService>();
             var app = builder.Build();
 

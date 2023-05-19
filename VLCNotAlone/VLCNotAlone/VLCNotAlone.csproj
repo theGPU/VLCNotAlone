@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -13,11 +13,15 @@
   <ItemGroup>
     <None Remove="Resources\Images\blueLogo.png" />
     <None Remove="Resources\Images\orangeLogo.png" />
+    <None Remove="Resources\Images\ServersAndRooms\InFavorite.png" />
+    <None Remove="Resources\Images\ServersAndRooms\NotInFavorite.png" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Images\LogoScreen\BlueLogo.png" />
     <EmbeddedResource Include="Resources\Images\LogoScreen\OrangeLogo.png" />
+    <EmbeddedResource Include="Resources\Images\ServersAndRooms\InFavorite.png" />
+    <EmbeddedResource Include="Resources\Images\ServersAndRooms\NotInFavorite.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +29,7 @@
     <PackageReference Include="LibVLCSharp.Forms" Version="3.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="7.0.5" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2578" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.5" />
   </ItemGroup>
@@ -53,6 +58,15 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\MainMenuSettingsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\PasswordEnterPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\ServerBrowserPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\ServerOverviewPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Themes\DarkTheme.xaml">

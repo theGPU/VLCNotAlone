@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using VLCNotAlone.MasterServer.Models.Listing;
+using VLCNotAlone.Shared.Models;
 
 namespace VLCNotAlone.MasterServer.Services.ServerRegistry
 {

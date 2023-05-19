@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VLCNotAlone.Networking
+namespace VLCNotAlone.Services.Networking
 {
     internal static class NetworkProcessor
     {

@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VLCNotAlone.Models"
+             xmlns:extensions="clr-namespace:VLCNotAlone.Extensions"
+             xmlns:pages="clr-namespace:VLCNotAlone.Pages"
+             x:DataType="pages:ServerBrowserPage"
+             x:Class="VLCNotAlone.Pages.ServerBrowserPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- back arrow here? in grid.collumn=0 -->
+                <Label Text="Select server" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ListView x:Name="ServersList" SeparatorVisibility="Default" SelectionMode="Single" ItemsSource="{x:Binding Servers}" ItemSelected="OnServerSelected" Grid.Column="0">
+                    <ListView.Header>
+                        <Grid BackgroundColor="#38414b">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="16"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Text="Servers" VerticalOptions="Start" HorizontalOptions="Start" Grid.Column="1"/>
+                            <Label Text="Clients" VerticalOptions="Start" HorizontalOptions="Start" Grid.Column="2"/>
+                            <Label Text="Rooms" VerticalOptions="Start" HorizontalOptions="Start" Grid.Column="3"/>
+                            <Label Text="Ping" VerticalOptions="Start" HorizontalOptions="Start" Grid.Column="4"/>
+                        </Grid>
+                    </ListView.Header>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:Name="ServerDataTemplate" x:DataType="models:ServerListItem">
+                            <ViewCell>
+                                <ViewCell.View>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="16"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Source="{extensions:ImageResource VLCNotAlone.Resources.Images.ServersAndRooms.NotInFavorite.png}"
+                                               VerticalOptions="Start" 
+                                               HorizontalOptions="Start"
+                                               Grid.Column="0"/>
+
+                                        <Label Text="{x:Binding Name}"
+                                               VerticalOptions="Start"
+                                               HorizontalOptions="Start"
+                                               Grid.Column="1"/>
+
+                                        <Label Text="{x:Binding ClientsCount}"
+                                               VerticalOptions="Start"
+                                               HorizontalOptions="Center"
+                                               WidthRequest="20"
+                                               Grid.Column="2"/>
+
+                                        <Label Text="{x:Binding RoomsCount}"
+                                               VerticalOptions="Start"
+                                               HorizontalOptions="Center"
+                                               WidthRequest="20"
+                                               Grid.Column="3"/>
+
+                                        <Label Text="{x:Binding Ping}"
+                                               VerticalOptions="Start"
+                                               HorizontalOptions="Center"
+                                               WidthRequest="20"
+                                               Grid.Column="4"/>
+                                    </Grid>
+                                </ViewCell.View>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

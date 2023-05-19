@@ -7,14 +7,16 @@ namespace VLCNotAlone.Server.Services
     {
         readonly ILogger<MasterServerClientService> _logger;
         RemoteConfigService _remoteConfigService;
+        RoomsService _roomsService;
 
-        public MasterServerClientService(ILogger<MasterServerClientService> logger, RemoteConfigService remoteConfigService)
+        public MasterServerClientService(ILogger<MasterServerClientService> logger, RemoteConfigService remoteConfigService, RoomsService roomsService)
         {
             _logger = logger;
             _remoteConfigService = remoteConfigService;
+            _roomsService = roomsService;
         }
 
-        private BaseHostInfo GetBaseHostInfo()
+        public BaseHostInfo GetBaseHostInfo()
         {
             var hostInfo = new BaseHostInfo
             {
@@ -23,10 +25,10 @@ namespace VLCNotAlone.Server.Services
                 Description = "Test server description",
                 Port = 7133,
                 IsPublic = true,
-                HasPassword = true,
+                HasPassword = false,
                 ServerVersion = Constants.AppVersion,
                 ClientsCount = 0,
-                RoomsCount = 0
+                RoomsCount = _roomsService.RoomsCount
             };
             return hostInfo;
         }

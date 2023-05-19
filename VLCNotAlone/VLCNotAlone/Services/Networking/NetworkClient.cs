@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
@@ -8,16 +9,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using VLCNotAlone.Shared;
 using VLCNotAlone.Shared.Models;
+using VLCNotAlone.Shared.Models.Room;
 using VLCNotAlone.Shared.Networking;
 
-namespace VLCNotAlone.Networking
+namespace VLCNotAlone.Services.Networking
 {
+    internal sealed class ConnectionData
+    {
+        public BaseHostInfo HostInfo { get; set; }
+        public ConcurrentDictionary<int, ListingRoomInfo> Rooms { get; set; } = new ConcurrentDictionary<int, ListingRoomInfo>();
+    }
+
     internal sealed class NetworkClient : IDisposable
     {
-        public static NetworkClient Obj { get; private set; } = new NetworkClient();
+        public static NetworkClient Obj => ServiceLocator.NetworkClient;
 
         public bool IsConnected => connection.State == HubConnectionState.Connected;
         HubConnection connection;
+        public ConnectionData ConnectionData { get; set; }
+
         public event Action OnConnected;
         public event Action<string, bool, Exception> OnDisconnected; //msg, isException, Exception?
         public event Action OnReconnecting;
@@ -28,14 +38,16 @@ namespace VLCNotAlone.Networking
         public event Action<ListingHostInfo> OfficialServerDiscovered;
         public event Action<Exception> MasterServerClientThrowDiscoverError;
 
-        private readonly MasterServerClient masterServerClient;
+        private readonly MasterServerRestApiClient masterServerClient;
 
         private CancellationToken _cancellationToken;
 
-        private NetworkClient()
+        public NetworkClient()
         {
-            masterServerClient = new MasterServerClient();
+            masterServerClient = new MasterServerRestApiClient();
         }
+
+        public void ClearConnectionData() => ConnectionData = new ConnectionData();
 
         #region MasterServer
         public void StartDiscoverServers() => Task.Run(() => StartDiscoverServersInternal(false));
@@ -57,7 +69,8 @@ namespace VLCNotAlone.Networking
                         ServerDiscovered?.Invoke(server);
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MasterServerClientThrowDiscoverError?.Invoke(ex);
             }
@@ -80,7 +93,7 @@ namespace VLCNotAlone.Networking
                 connection.Reconnecting += OnHubConnectionReconnecting;
                 connection.Reconnected += OnHubConnectionReconnected;
                 RegisterDefaultListeners();
-            
+
                 await connection.StartAsync(_cancellationToken);
                 OnConnected?.Invoke();
             }
@@ -119,22 +132,33 @@ namespace VLCNotAlone.Networking
 
         #region ServerRPC
 
+        public async Task<ListingRoomInfo[]> RequestRoomsList()
+        {
+            return await RPC<ListingRoomInfo[]>("GetRoomsList", new object[] { }, _cancellationToken);
+        }
+
         public async Task<BaseHostInfo> RequestHostInfo()
         {
             return await RPC<BaseHostInfo>("GetHostInfo", new object[] { }, _cancellationToken);
         }
 
-        private async Task<T> RPC<T>(string methodName, object[] args, CancellationToken cancellationToken = default) where T : class
+        public async Task<bool> CheckPassword(string password)
+        {
+            return await RPC<bool>("CheckPassword", new object[] { password }, _cancellationToken);
+        }
+
+        private async Task<T> RPC<T>(string methodName, object[] args, CancellationToken cancellationToken = default)
         {
             try
             {
                 return await connection.InvokeCoreAsync<T>(methodName, args, _cancellationToken);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 OnHubError?.Invoke(ex);
+                DisposeConnection();
+                throw ex;
             }
-
-            return null;
         }
 
         #endregion ServerRPC

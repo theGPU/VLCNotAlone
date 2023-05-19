@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using VLCNotAlone.MasterServer.Models.Listing;
 using VLCNotAlone.MasterServer.Services.ServerRegistrar;
 using VLCNotAlone.MasterServer.Services.ServerRegistry;
 using VLCNotAlone.Shared;
-using VLCNotAlone.Shared.Utils.Serializer;
+using VLCNotAlone.Shared.Models;
 
 namespace VLCNotAlone.MasterServer.Controllers.V1
 {
