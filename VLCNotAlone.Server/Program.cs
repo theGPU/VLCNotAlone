@@ -12,7 +12,9 @@ namespace VLCNotAlone.Server
             builder.Services.AddSingleton<RemoteConfigService>();
             builder.Services.AddSingleton<ServerAuthorizationService>();
             builder.Services.AddSingleton<RoomsService>();
+
             builder.Services.AddSingleton<MasterServerClientService>();
+            builder.Services.AddHostedService<MasterServerRegisterService>();
             var app = builder.Build();
 
             app.MapHub<HubService>("/server");

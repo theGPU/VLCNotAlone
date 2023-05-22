@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VLCNotAlone.Models;
 using VLCNotAlone.Services.Networking;
+using VLCNotAlone.Shared;
 using VLCNotAlone.Shared.Models;
 using VLCNotAlone.Shared.Networking;
 using Xamarin.Forms;
@@ -86,7 +87,20 @@ namespace VLCNotAlone.Pages
 
         private void OnServerSelected(object sender, SelectedItemChangedEventArgs e)
         {
+            var serverEntry = e.SelectedItem as ServerListItem;
 
+            ServerNameLabel.Text = serverEntry?.Name;
+            ServerDescriptionLabel.Text = serverEntry?.Description;
+            ConnectButton.IsEnabled = serverEntry?.Version == Constants.AppVersion;
+        }
+
+        private void OnConnectButtonClicked(object sender, EventArgs e)
+        {
+            var serverEntry = ServersList.SelectedItem as ServerListItem;
+            if (serverEntry == null)
+                return;
+
+            Navigation.PushModalAsync(new ConnectingProcessPage($"{serverEntry.Protocol}://{serverEntry.IpAddress}:{serverEntry.Port}/server"));
         }
 
         protected override void OnDisappearing()

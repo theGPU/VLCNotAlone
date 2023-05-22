@@ -1,19 +1,24 @@
 ﻿using VLCNotAlone.Shared;
 using VLCNotAlone.Shared.Models;
+using VLCNotAlone.Shared.Networking;
 
 namespace VLCNotAlone.Server.Services
 {
-    public class MasterServerClientService : BackgroundService
+    public class MasterServerClientService
     {
         readonly ILogger<MasterServerClientService> _logger;
         RemoteConfigService _remoteConfigService;
         RoomsService _roomsService;
+
+        MasterServerRestApiClient _client;
 
         public MasterServerClientService(ILogger<MasterServerClientService> logger, RemoteConfigService remoteConfigService, RoomsService roomsService)
         {
             _logger = logger;
             _remoteConfigService = remoteConfigService;
             _roomsService = roomsService;
+
+            _client = new MasterServerRestApiClient();
         }
 
         public BaseHostInfo GetBaseHostInfo()
@@ -24,6 +29,7 @@ namespace VLCNotAlone.Server.Services
                 Name = "Test server",
                 Description = "Test server description",
                 Port = 7133,
+                Protocol = ServerProtocol.https,
                 IsPublic = true,
                 HasPassword = false,
                 ServerVersion = Constants.AppVersion,
@@ -33,26 +39,12 @@ namespace VLCNotAlone.Server.Services
             return hostInfo;
         }
 
-        private BaseHostInfo GetRegisterHostInfo() => GetBaseHostInfo().ToRegisterHostInfo(Guid.Parse("00000000-0000-0000-0000-000000000000"));
+        private RegisterHostInfo GetRegisterHostInfo() => GetBaseHostInfo().ToRegisterHostInfo(Guid.Parse("00000000-0000-0000-0000-000000000000"));
 
-        private async Task RegisterServer()
+        public async Task RegisterServer()
         {
             var registerHostInfo = GetRegisterHostInfo();
-
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            try
-            {
-                do
-                {
-                    await RegisterServer();
-                    await Task.Delay(TimeSpan.FromSeconds(Constants.MasterServerRefreshTimeSeconds), stoppingToken);
-                }
-                while (!stoppingToken.IsCancellationRequested);
-            }
-            catch (Exception ex) { _logger.LogError(ex, "Failed to execute server registration task"); }
+            var status = await _client.RegisterServer(registerHostInfo);
         }
     }
 }

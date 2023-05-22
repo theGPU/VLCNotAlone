@@ -16,6 +16,7 @@ namespace VLCNotAlone.Shared.Models
                 Name = Name,
                 IpAddress = IpAddress,
                 Port = Port,
+                Protocol = Protocol,
                 IsPublic = IsPublic,
                 ServerVersion = ServerVersion,
                 ClientsCount = ClientsCount,

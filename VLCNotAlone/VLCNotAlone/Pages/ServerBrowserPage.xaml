@@ -36,9 +36,9 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="16"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition Width="32"/>
                             </Grid.ColumnDefinitions>
 
                             <Label Text="Servers" VerticalOptions="Start" HorizontalOptions="Start" Grid.Column="1"/>
@@ -55,9 +55,9 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="16"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="32"/>
+                                            <ColumnDefinition Width="32"/>
+                                            <ColumnDefinition Width="32"/>
                                         </Grid.ColumnDefinitions>
 
                                         <Image Source="{extensions:ImageResource VLCNotAlone.Resources.Images.ServersAndRooms.NotInFavorite.png}"
@@ -67,24 +67,24 @@
 
                                         <Label Text="{x:Binding Name}"
                                                VerticalOptions="Start"
-                                               HorizontalOptions="Start"
+                                               HorizontalOptions="StartAndExpand"
                                                Grid.Column="1"/>
 
                                         <Label Text="{x:Binding ClientsCount}"
                                                VerticalOptions="Start"
-                                               HorizontalOptions="Center"
+                                               HorizontalOptions="CenterAndExpand"
                                                WidthRequest="20"
                                                Grid.Column="2"/>
 
                                         <Label Text="{x:Binding RoomsCount}"
                                                VerticalOptions="Start"
-                                               HorizontalOptions="Center"
+                                               HorizontalOptions="CenterAndExpand"
                                                WidthRequest="20"
                                                Grid.Column="3"/>
 
                                         <Label Text="{x:Binding Ping}"
                                                VerticalOptions="Start"
-                                               HorizontalOptions="Center"
+                                               HorizontalOptions="CenterAndExpand"
                                                WidthRequest="20"
                                                Grid.Column="4"/>
                                     </Grid>
@@ -93,6 +93,18 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+
+                <Grid BackgroundColor="#33333333" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Label Text="Detals" LineBreakMode="WordWrap" x:Name="ServerNameLabel" Grid.Row="0"/>
+                    <Label LineBreakMode="WordWrap" x:Name="ServerDescriptionLabel" Grid.Row="1"/>
+                    <Button BackgroundColor="#33333333" x:Name="ConnectButton" IsEnabled="False" Clicked="OnConnectButtonClicked" Text="Connect" Grid.Row="2"/>
+                </Grid>
             </Grid>
         </Grid>
     </ContentPage.Content>

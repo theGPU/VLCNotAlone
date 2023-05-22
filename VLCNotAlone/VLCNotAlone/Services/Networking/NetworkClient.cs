@@ -87,6 +87,11 @@ namespace VLCNotAlone.Services.Networking
                 if (connection != null)
                     await connection.DisposeAsync();
 
+#if DEBUG
+                if (server.Contains("::"))
+                    server = server.Replace("::1", "localhost");
+#endif
+
                 connection = new HubConnectionBuilder().WithUrl(server).WithAutomaticReconnect(Enumerable.Range(0, 30).Select(x => TimeSpan.FromSeconds(2)).ToArray()).Build();
                 connection.KeepAliveInterval = Constants.ClientToServerKeepAliveInterval;
                 connection.Closed += OnHubConnectionClosed;

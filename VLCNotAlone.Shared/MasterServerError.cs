@@ -9,6 +9,8 @@ namespace VLCNotAlone.Shared
         NoError,
         CannnotGetIPAddress,
         ServerBanned,
-        InvalidPassport
+        InvalidPassport,
+
+        RequestError
     }
 }

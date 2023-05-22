@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace VLCNotAlone.Shared.Models
 {
+    public enum ServerProtocol
+    {
+        http,
+        https
+    }
+
     public class BaseHostInfo
     {
         public Guid ID { get; set; }
@@ -10,6 +16,7 @@ namespace VLCNotAlone.Shared.Models
         [MinLength(1), MaxLength(500)] public string Description { get; set; }
 
         public ushort Port { get; set; }
+        public ServerProtocol Protocol { get; set; }
 
         public bool IsPublic { get; set; }
         public bool HasPassword { get; set; }
@@ -25,7 +32,8 @@ namespace VLCNotAlone.Shared.Models
                 Passport = passport,
                 Name = Name, 
                 Description = Description, 
-                Port = Port, 
+                Port = Port,
+                Protocol = Protocol,
                 IsPublic = IsPublic, 
                 HasPassword = HasPassword, 
                 ServerVersion = ServerVersion, 

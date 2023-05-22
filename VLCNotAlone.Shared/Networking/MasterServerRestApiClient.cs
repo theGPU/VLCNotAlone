@@ -31,15 +31,37 @@ namespace VLCNotAlone.Shared.Networking
 
         private async Task<string> RetrieveServerList(string suffix = "")
         {
-            var ulr = $"{Constants.MasterServerUrl}/api/v{Constants.MasterServerProtocolVersion}/serverListing{suffix}";
+            var url = $"{Constants.MasterServerUrl}/api/v{Constants.MasterServerProtocolVersion}/serverListing{suffix}";
             try
             {
-                var response = await client.GetStringAsync(ulr);
+                var response = await client.GetStringAsync(url);
                 return response;
             } catch (Exception ex)
             {
                 #warning Add log here
                 return "[]";
+            }
+        }
+
+        public async Task<MasterServerError> RegisterServer(RegisterHostInfo hostInfo)
+        {
+            var url = $"{Constants.MasterServerUrl}/api/v{Constants.MasterServerProtocolVersion}/serverListing/registerServer";
+            try
+            {
+                var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(hostInfo, Constants.MasterServerJsonSerializerSettings), Encoding.UTF8, "application/json"));
+                var resp = await response.Content.ReadAsStringAsync();
+                if (int.TryParse(resp, out int statusCode))
+                {
+                    return (MasterServerError)statusCode;
+                } else
+                {
+                    #warning Add log here
+                    return MasterServerError.RequestError;
+                }
+            } catch (Exception ex)
+            {
+                #warning Add log here
+                return MasterServerError.RequestError;
             }
         }
 
